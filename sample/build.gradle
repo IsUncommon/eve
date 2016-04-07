@@ -33,7 +33,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.2.1'
 
-    //compile 'com.github.isuncommon:eve:-SNAPSHOT'
+    //compile 'com.github.isuncommon:eve:master-SNAPSHOT'
+    //compile 'com.github.isuncommon.eve:moshi:master-SNAPSHOT'
 
     compile project(':eve')
     compile project(':eve-converters:moshi')
