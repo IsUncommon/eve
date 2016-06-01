@@ -30,3 +30,5 @@ dependencies {
   compile project(':eve')
   compile 'com.squareup.sqlbrite:sqlbrite:0.6.3'
 }
+
+apply from: 'bintray.gradle'

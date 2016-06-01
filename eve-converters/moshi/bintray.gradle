@@ -1,0 +1,33 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+apply from: "$project.rootDir/maven_installer.gradle"
+
+// Bintray
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+  user = properties.getProperty("bintrayUser")
+  //add bintrayUser property to local.properties in root project
+  key = properties.getProperty("bintrayApikey")
+  //add bintrayApiKey property to local.properties in root project
+  configurations = ['archives']
+  pkg {
+    repo = 'maven'
+    name = LIB_NAME
+    desc = LIB_DESC
+    websiteUrl = LIB_URL
+    vcsUrl = LIB_GIT_URL
+    licenses = ['Apache-2.0']
+    userOrg = USER_ORG
+    publish = true
+    labels = ['aar', 'android', 'isuncommon']
+    publicDownloadNumbers = true
+    version {
+      desc = LIB_DESC
+      gpg {
+        sign = false
+      }
+    }
+  }
+}

@@ -30,3 +30,5 @@ dependencies {
   compile project(':eve')
   compile 'com.squareup.moshi:moshi:1.2.0'
 }
+
+apply from: 'bintray.gradle'
