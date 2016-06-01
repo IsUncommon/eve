@@ -31,5 +31,5 @@ dependencies {
   compile fileTree(dir: 'libs', include: ['*.jar'])
   testCompile 'junit:junit:4.12'
   compile project(':eve')
-  compile 'com.squareup.moshi:moshi:1.0.0'
+  compile 'com.squareup.moshi:moshi:1.2.0'
 }
