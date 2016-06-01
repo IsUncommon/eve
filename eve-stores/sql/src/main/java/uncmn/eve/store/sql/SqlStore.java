@@ -13,7 +13,7 @@ import uncmn.eve.Types;
 import uncmn.eve.Value;
 
 /**
- * An implementation of {@link Store} with Sqlite operations
+ * An implementation of {@link Store} with Sqlite operations.
  */
 public class SqlStore extends Store {
 
