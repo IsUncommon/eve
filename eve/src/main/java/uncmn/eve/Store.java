@@ -12,7 +12,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link int} or {@link Integer} values
+   * Store {@link int} or {@link Integer} values.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value int
@@ -22,7 +22,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link float} or {@link Float}
+   * Store {@link float} or {@link Float}.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value float
@@ -32,7 +32,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link double} or {@link Double}
+   * Store {@link double} or {@link Double}.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value double
@@ -42,7 +42,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link boolean} or {@link Boolean}
+   * Store {@link boolean} or {@link Boolean}.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value boolean
@@ -53,7 +53,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link char} or {@link Character}
+   * Store {@link char} or {@link Character}.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value char
@@ -63,7 +63,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link byte} or {@link Byte}
+   * Store {@link byte} or {@link Byte}.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value byte
@@ -73,7 +73,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link String}
+   * Store {@link String}.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value {@link String}
@@ -83,7 +83,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store an Object of any kind into
+   * Store an Object of any kind into.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param object Object
@@ -94,7 +94,15 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Build {@link Value} for {@link Class} type
+   * Set key with value in custom store.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value {@link Value}
+   */
+  public abstract void set(String key, Value value);
+
+  /**
+   * Build {@link Value} for {@link Class} .
    *
    * @param value byte array of the Object
    * @param type {@link Class}
@@ -105,7 +113,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Convert the byte array into {@link Class} type
+   * Convert the byte array into {@link Class} type.
    *
    * @param value byte array
    * @param type {@link Class}
@@ -142,7 +150,7 @@ public abstract class Store implements Operations {
     } else if (byte.class.equals(type)) {
       object = byteBuffer.get();
     } else if (String.class.equals(type)) {
-      object = new String(value);
+      object = new String(value, Charset.defaultCharset());
     }
 
     if (object == null) {
@@ -162,14 +170,6 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Set key with value in custom store.
-   *
-   * @param key is a {@link String}, NotNull and Unique
-   * @param value {@link Value}
-   */
-  public abstract void set(String key, Value value);
-
-  /**
    * Get value for key from store.
    *
    * @param key is a {@link String}, NotNull and Unique
@@ -179,7 +179,7 @@ public abstract class Store implements Operations {
   public abstract <T> T get(String key);
 
   /**
-   * Delete key
+   * Delete key.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @return true if deleted key false otherwise
@@ -187,7 +187,7 @@ public abstract class Store implements Operations {
   public abstract boolean delete(String key);
 
   /**
-   * Check if key exists in the Store
+   * Check if key exists in the Store.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @return true if key exists false otherwise

@@ -1,7 +1,7 @@
 package uncmn.eve;
 
 /**
- * A converter to serialize object into byte[] and deserialize object from byte[]
+ * A converter to serialize object into byte[] and deserialize object from byte[].
  */
 public interface Converter {
 

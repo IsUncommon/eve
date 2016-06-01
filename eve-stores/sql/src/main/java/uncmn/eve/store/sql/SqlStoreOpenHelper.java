@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * An object instance representing {@link SQLiteOpenHelper} with KeyValue store database
+ * An object instance representing {@link SQLiteOpenHelper} with KeyValue store database.
  */
 public class SqlStoreOpenHelper extends SQLiteOpenHelper {
 

@@ -4,8 +4,7 @@ import java.lang.reflect.Type;
 
 /**
  * An object instance representing Value.
- *
- * This wraps the value of a key with a type and custom identifiers.
+ * <p> This wraps the value of a key with a type and custom identifiers.</p>
  */
 public class Value {
 
@@ -57,9 +56,14 @@ public class Value {
       return this;
     }
 
+    /**
+     * Build the value object.
+     *
+     * @return Value object.
+     */
     public Value build() {
       if (type == null) {
-        throw new NullPointerException("Type cannot be null");
+        throw new IllegalArgumentException("Type cannot be null");
       }
 
       Value v = new Value();

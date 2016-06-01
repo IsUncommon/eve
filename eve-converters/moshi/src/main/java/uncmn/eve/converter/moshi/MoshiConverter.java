@@ -7,8 +7,7 @@ import uncmn.eve.Converter;
 
 /**
  * An object instance representing MoshiConverter.
- *
- * Serialize an object to bytes and vice versa.
+ * <p> Serialize an object to bytes and vice versa.</p>
  */
 public class MoshiConverter implements Converter {
 
@@ -19,7 +18,7 @@ public class MoshiConverter implements Converter {
   }
 
   /**
-   * @param moshi - {@link Moshi}
+   * @param moshi - {@link Moshi} instance.
    * @return {@link MoshiConverter}
    */
   public static MoshiConverter create(Moshi moshi) {

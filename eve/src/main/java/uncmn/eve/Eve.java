@@ -4,8 +4,7 @@ import android.content.Context;
 
 /**
  * An object instance representing Eve.
- *
- * Main entry to the Eve KeyValue store
+ * <p>Main entry to the Eve KeyValue store</p>.
  */
 public final class Eve {
 

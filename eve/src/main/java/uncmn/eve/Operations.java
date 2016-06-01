@@ -1,7 +1,7 @@
 package uncmn.eve;
 
 /**
- * Set of operations for known types of Java objects
+ * Set of operations for known types of Java objects.
  */
 public interface Operations {
 

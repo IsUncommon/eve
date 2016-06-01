@@ -44,6 +44,13 @@ public class ValueQuery extends SqlQuery {
     columns(PROJECTION);
   }
 
+  /**
+   * Convert value into content values.
+   *
+   * @param key key with which value needs to stored.
+   * @param value Value instance.
+   * @return content values instance.
+   */
   public static ContentValues contentValues(String key, Value value) {
     ContentValues values = new ContentValues();
     values.put(KEY, key);

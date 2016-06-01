@@ -8,9 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Helper for building selection clauses for {@link android.database.sqlite.SQLiteDatabase}. Each
- * appended clause is combined using {@code AND}. This class is <em>not</em>
- * thread safe.
+ * Helper for building selection clauses for {@link android.database.sqlite.SQLiteDatabase}.
+ * <p>
+ * Each appended clause is combined using {@code AND}. This class is <em>not</em>thread safe.
+ * </p>
  */
 class SqlQuery {
   private static final String TAG = "SqlQuery.class";
@@ -84,11 +85,6 @@ class SqlQuery {
     return this;
   }
 
-  public SqlQuery table(String table) {
-    mTable = table;
-    return this;
-  }
-
   public SqlQuery columns(String[] columns) {
     this.mColumns = columns;
     return this;
@@ -108,6 +104,11 @@ class SqlQuery {
     } else {
       mTable = table;
     }
+    return this;
+  }
+
+  public SqlQuery table(String table) {
+    mTable = table;
     return this;
   }
 

@@ -16,9 +16,9 @@ import java.util.Properties;
 
 /**
  * Factory methods for types.
- *
- *
+ * <p>
  * https://github.com/square/moshi/blob/master/moshi/src/main/java/com/squareup/moshi/Types.java
+ * </p>
  */
 public final class Types {
   static final Type[] EMPTY_TYPE_ARRAY = new Type[] {};
@@ -81,6 +81,12 @@ public final class Types {
     }
   }
 
+  /**
+   * Get class type for a primitive.
+   * @param c class name string.
+   * @param isPrimitive if is primitive.
+   * @return Typed class instance.
+   */
   public static Class<?> getClassType(String c, boolean isPrimitive) {
     Class cls = null;
     if (isPrimitive) {
@@ -111,6 +117,10 @@ public final class Types {
     return cls;
   }
 
+  /**
+   * @param type Type instance.
+   * @return Raw type of the class.
+   */
   public static Class<?> getRawType(Type type) {
     if (type instanceof Class<?>) {
       // type is a normal class.
