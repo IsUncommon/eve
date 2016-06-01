@@ -1,8 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 apply from: "$project.rootDir/quality/quality.gradle"
-
-group = 'com.github.isuncommon'
 
 android {
   compileSdkVersion 23
