@@ -90,7 +90,7 @@ public abstract class Store implements Operations {
    * @param object Object
    */
   @Override public void set(String key, Object object) {
-    String converterKey = converter.converterKey(object);
+    String converterKey = converter.mapping(object);
     if (converterKey == null) {
       throw new RuntimeException("Object cannot be converted");
     }

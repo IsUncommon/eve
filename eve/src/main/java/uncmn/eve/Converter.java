@@ -21,5 +21,5 @@ public interface Converter {
   /**
    * @return Converter key of a given object. Null if cannot be determined.
    */
-  String converterKey(Object object);
+  String mapping(Object object);
 }

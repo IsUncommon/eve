@@ -21,9 +21,10 @@ public class MoshiConverter implements Converter {
   }
 
   /**
-   * @param converterKey Unique converter key.
+   * @param converterKey Unique converter key. This is the key that will be persisted in the db.
+   * @param converterClass Class that should be mapped for this key.
    */
-  public <T> void addConverter(String converterKey, Class<T> converterClass) {
+  public <T> void map(String converterKey, Class<T> converterClass) {
     converterMappings.put(converterKey, converterClass);
   }
 
@@ -75,10 +76,10 @@ public class MoshiConverter implements Converter {
   }
 
   @Override public byte[] serialize(Object object) {
-    return serialize(object, converterMappings.get(converterKey(object)));
+    return serialize(object, converterMappings.get(mapping(object)));
   }
 
-  @Override public String converterKey(Object object) {
+  @Override public String mapping(Object object) {
     for (Map.Entry<String, Class<?>> item : converterMappings.entrySet()) {
       boolean bool = item.getValue().isAssignableFrom(object.getClass());
       if (bool) {

@@ -83,6 +83,7 @@ public final class Types {
 
   /**
    * Get class type for a primitive.
+   *
    * @param c class name string.
    * @param isPrimitive if is primitive.
    * @return Typed class instance.
@@ -106,12 +107,6 @@ public final class Types {
         cls = long.class;
       } else if (byte.class.getName().equals(c)) {
         cls = byte.class;
-      }
-    } else {
-      try {
-        cls = Class.forName(c);
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
       }
     }
     return cls;

@@ -20,8 +20,8 @@ public class MainActivity extends AppCompatActivity {
 
     Moshi moshi = new Moshi.Builder().add(new AutoValueMoshiAdapterFactory()).build();
     MoshiConverter converter = MoshiConverter.create(moshi);
-    converter.addConverter(SampleObjectOne.CONVERTER_KEY, SampleObjectOne.class);
-    converter.addConverter(SampleObjectTwo.CONVERTER_KEY, SampleObjectTwo.class);
+    converter.map(SampleObjectOne.CONVERTER_KEY, SampleObjectOne.class);
+    converter.map(SampleObjectTwo.CONVERTER_KEY, SampleObjectTwo.class);
     SqlStore store = SqlStore.create(this, converter);
 
     eve = Eve.builder(this).store(store).build();
