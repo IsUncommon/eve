@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'io.freefair.android-maven-jars'
 apply from: "$project.rootDir/quality/quality.gradle"
 
 android {
@@ -30,5 +32,3 @@ dependencies {
   compile project(':eve')
   compile 'com.squareup.sqlbrite:sqlbrite:0.6.3'
 }
-
-apply from: 'bintray.gradle'
