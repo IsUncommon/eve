@@ -17,7 +17,16 @@ public class SqlStoreOpenHelper extends SQLiteOpenHelper {
   }
 
   @Override public void onCreate(SQLiteDatabase db) {
-    db.execSQL(ValueQuery.CREATE_TABLE);
+    try {
+      db.beginTransaction();
+      db.execSQL(ValueQuery.CREATE_TABLE);
+      db.execSQL(ValueQuery.CREATE_INDEX_TYPE);
+      db.setTransactionSuccessful();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      db.endTransaction();
+    }
   }
 
   @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

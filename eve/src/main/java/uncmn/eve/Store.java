@@ -1,12 +1,9 @@
 package uncmn.eve;
 
-import java.lang.reflect.Type;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-
 public abstract class Store implements Operations {
 
   private Converter converter;
+  private EveConverter eveConverter = new EveConverter();
 
   public Store(Converter converter) {
     this.converter = converter;
@@ -19,7 +16,8 @@ public abstract class Store implements Operations {
    * @param value int
    */
   @Override public void set(String key, int value) {
-    set(key, value(ByteBuffer.allocate(4).putInt(value).array(), int.class));
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
   }
 
   /**
@@ -29,7 +27,19 @@ public abstract class Store implements Operations {
    * @param value float
    */
   @Override public void set(String key, float value) {
-    set(key, value(ByteBuffer.allocate(4).putFloat(value).array(), float.class));
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
+   * Store {@link float} or {@link Long}.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value long
+   */
+  @Override public void set(String key, long value) {
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
   }
 
   /**
@@ -39,7 +49,8 @@ public abstract class Store implements Operations {
    * @param value double
    */
   @Override public void set(String key, double value) {
-    set(key, value(ByteBuffer.allocate(4).putDouble(value).array(), double.class));
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
   }
 
   /**
@@ -49,8 +60,8 @@ public abstract class Store implements Operations {
    * @param value boolean
    */
   @Override public void set(String key, boolean value) {
-    int v = value ? 1 : 0;
-    set(key, value(ByteBuffer.allocate(4).putInt(v).array(), boolean.class));
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
   }
 
   /**
@@ -60,7 +71,8 @@ public abstract class Store implements Operations {
    * @param value char
    */
   @Override public void set(String key, char value) {
-    set(key, value(ByteBuffer.allocate(4).putChar(value).array(), char.class));
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
   }
 
   /**
@@ -70,7 +82,8 @@ public abstract class Store implements Operations {
    * @param value byte
    */
   @Override public void set(String key, byte value) {
-    set(key, value(ByteBuffer.allocate(4).put(value).array(), byte.class));
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
   }
 
   /**
@@ -80,7 +93,8 @@ public abstract class Store implements Operations {
    * @param value {@link String}
    */
   @Override public void set(String key, String value) {
-    set(key, value(value.getBytes(Charset.forName("UTF-8")), String.class));
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
   }
 
   /**
@@ -106,17 +120,6 @@ public abstract class Store implements Operations {
   public abstract void set(String key, Value value);
 
   /**
-   * Build {@link Value} for {@link Class} .
-   *
-   * @param value byte array of the Object
-   * @param type {@link Class}
-   * @return {@link Value}
-   */
-  protected Value value(byte[] value, Class type) {
-    return Value.builder().value(value).type(type).build();
-  }
-
-  /**
    * Build {@link Value}.
    *
    * @param value byte array of the Object
@@ -135,55 +138,10 @@ public abstract class Store implements Operations {
    */
   @SuppressWarnings({ "unchecked", "UnusedDeclaration" }) protected <T> T convert(byte[] value,
       String converterKey) {
+    if (eveConverter.hasMapping(converterKey)) {
+      return (T) eveConverter.deserialize(value, converterKey);
+    }
     return (T) converter.deserialize(value, converterKey);
-  }
-
-  /**
-   * Convert the byte array into {@link Class} type.
-   *
-   * @param value byte array
-   * @param type {@link Class}
-   * @param <T> generic return type
-   * @return generic Class type
-   */
-  @SuppressWarnings({ "unchecked", "UnusedDeclaration" }) protected <T> T convert(byte[] value,
-      Type type) {
-
-    if (type == null) {
-      return null;
-    }
-
-    ByteBuffer byteBuffer = ByteBuffer.wrap(value);
-    Object object = null;
-    if (int.class.equals(type)) {
-      object = byteBuffer.getInt();
-    } else if (float.class.equals(type)) {
-      object = byteBuffer.getFloat();
-    } else if (double.class.equals(type)) {
-      object = byteBuffer.getDouble();
-    } else if (char.class.equals(type)) {
-      char c = 0;
-      if (value.length > 0) {
-        c = byteBuffer.getChar();
-      }
-      object = c;
-    } else if (boolean.class.equals(type)) {
-      object = byteBuffer.getInt() == 1;
-    } else if (short.class.equals(type)) {
-      object = byteBuffer.getShort();
-    } else if (long.class.equals(type)) {
-      object = byteBuffer.getLong();
-    } else if (byte.class.equals(type)) {
-      object = byteBuffer.get();
-    } else if (String.class.equals(type)) {
-      object = new String(value, Charset.defaultCharset());
-    }
-
-    if (object == null) {
-      return null;
-    } else {
-      return (T) object;
-    }
   }
 
   /**

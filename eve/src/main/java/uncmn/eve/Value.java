@@ -1,7 +1,5 @@
 package uncmn.eve;
 
-import java.lang.reflect.Type;
-
 /**
  * An object instance representing Value.
  * <p> This wraps the value of a key with a type and custom identifiers.</p>
@@ -10,7 +8,6 @@ public class Value {
 
   private byte[] bytes;
   private String type;
-  private boolean isPrimitive;
 
   public static Builder builder() {
     return new Builder();
@@ -32,33 +29,18 @@ public class Value {
     return type;
   }
 
-  public void isPrimitive(boolean isPrimitive) {
-    this.isPrimitive = isPrimitive;
-  }
-
-  public boolean isPrimitive() {
-    return isPrimitive;
-  }
-
   public static class Builder {
 
     byte[] value;
-    Type type;
-    String stringType;
-    boolean isPrimitive;
+    String type;
 
     public Builder value(byte[] value) {
       this.value = value;
       return this;
     }
 
-    public Builder type(Class type) {
-      this.type = type;
-      return this;
-    }
-
     public Builder type(String type) {
-      this.stringType = type;
+      this.type = type;
       return this;
     }
 
@@ -68,18 +50,13 @@ public class Value {
      * @return Value object.
      */
     public Value build() {
-      if (type == null && stringType == null) {
-        throw new IllegalArgumentException("Atleast type or string type must be present.");
+      if (type == null) {
+        throw new IllegalArgumentException("Type must be present");
       }
 
       Value v = new Value();
       v.bytes = value;
-      if (type != null) {
-        v.isPrimitive = Types.isPrimitive(type);
-        v.type = Types.typeToString(type);
-      } else {
-        v.type = stringType;
-      }
+      v.type = type;
       return v;
     }
   }

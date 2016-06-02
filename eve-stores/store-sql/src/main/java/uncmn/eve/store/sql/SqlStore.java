@@ -9,7 +9,6 @@ import com.squareup.sqlbrite.SqlBrite;
 import rx.schedulers.Schedulers;
 import uncmn.eve.Converter;
 import uncmn.eve.Store;
-import uncmn.eve.Types;
 import uncmn.eve.Value;
 
 /**
@@ -52,7 +51,7 @@ public class SqlStore extends Store {
     }
   }
 
-  @Override public <T> T get(String key) {
+  @Override @SuppressWarnings("unchecked") public <T> T get(String key) {
     ValueQuery query = ValueQuery.queryBuilder().key(key);
     final String sql = query.sql();
     final String[] args = query.args();
@@ -60,16 +59,9 @@ public class SqlStore extends Store {
     Cursor cursor = db.query(sql, args);
     if (cursor != null && cursor.getCount() > 0) {
       cursor.moveToFirst();
-      boolean isPrimitive =
-          cursor.getInt(cursor.getColumnIndexOrThrow(ValueQuery.IS_PRIMITIVE)) == 1;
-      String c = cursor.getString(cursor.getColumnIndexOrThrow(ValueQuery.TYPE));
+      String type = cursor.getString(cursor.getColumnIndexOrThrow(ValueQuery.TYPE));
       byte[] value = cursor.getBlob(cursor.getColumnIndexOrThrow(ValueQuery.VALUE));
-      if (isPrimitive) {
-        Class<?> type = Types.getClassType(c, isPrimitive);
-        return convert(value, type);
-      } else {
-        return (T) convert(value, c);
-      }
+      return (T) convert(value, type);
     }
     return null;
   }

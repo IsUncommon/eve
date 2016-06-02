@@ -36,7 +36,7 @@ public class MoshiConverter implements Converter {
     return new MoshiConverter(moshi);
   }
 
-  public <T> T deserialize(byte[] data, Class<T> type) {
+  private <T> T deserialize(byte[] data, Class<T> type) {
     if (moshi == null || data == null || type == null) {
       return null;
     }
@@ -52,7 +52,18 @@ public class MoshiConverter implements Converter {
     return null;
   }
 
-  public byte[] serialize(Object object, Class type) {
+  /**
+   * @param data data bytes that are serialized to disk.
+   * @param converterKey Converter key.
+   * @param <T> type T.
+   * @return Object of type T.
+   */
+  @Override @SuppressWarnings("unchecked") public <T> T deserialize(byte[] data,
+      String converterKey) {
+    return deserialize(data, (Class<T>) converterMappings.get(converterKey));
+  }
+
+  @SuppressWarnings("unchecked") private byte[] serialize(Object object, Class type) {
     Buffer buffer = new Buffer();
     try {
       moshi.adapter(type).toJson(buffer, object);
@@ -64,21 +75,17 @@ public class MoshiConverter implements Converter {
   }
 
   /**
-   *
-   * @param data
-   * @param converterKey
-   * @param <T>
-   * @return
+   * @param object Object to be serialized into byte[].
+   * @return byte[] representation of object.
    */
-  @Override @SuppressWarnings("unchecked") public <T> T deserialize(byte[] data,
-      String converterKey) {
-    return deserialize(data, (Class<T>) converterMappings.get(converterKey));
-  }
-
   @Override public byte[] serialize(Object object) {
     return serialize(object, converterMappings.get(mapping(object)));
   }
 
+  /**
+   * @param object Object for which converter needs to be checked.
+   * @return converter key if this object can be converted.
+   */
   @Override public String mapping(Object object) {
     for (Map.Entry<String, Class<?>> item : converterMappings.entrySet()) {
       boolean bool = item.getValue().isAssignableFrom(object.getClass());
