@@ -64,6 +64,9 @@ public class MoshiConverter implements Converter {
   }
 
   @SuppressWarnings("unchecked") private byte[] serialize(Object object, Class type) {
+    if (type == null) {
+      throw new IllegalArgumentException("Class type cannot be null. Maybe map() first.");
+    }
     Buffer buffer = new Buffer();
     try {
       moshi.adapter(type).toJson(buffer, object);

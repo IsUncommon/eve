@@ -42,12 +42,17 @@ public class SqlStore extends Store {
 
     Cursor cursor = db.query(sql, args);
     ContentValues contentValues = ValueQuery.contentValues(key, value);
-
-    if (cursor != null && cursor.getCount() > 0) {
-      db.update(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE,
-          ValueQuery.WHERE_KEY, args);
-    } else {
-      db.insert(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+    try {
+      if (cursor != null && cursor.getCount() > 0) {
+        db.update(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE,
+            ValueQuery.WHERE_KEY, args);
+      } else {
+        db.insert(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+      }
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
     }
   }
 
@@ -57,12 +62,19 @@ public class SqlStore extends Store {
     final String[] args = query.args();
 
     Cursor cursor = db.query(sql, args);
-    if (cursor != null && cursor.getCount() > 0) {
-      cursor.moveToFirst();
-      String type = cursor.getString(cursor.getColumnIndexOrThrow(ValueQuery.TYPE));
-      byte[] value = cursor.getBlob(cursor.getColumnIndexOrThrow(ValueQuery.VALUE));
-      return (T) convert(value, type);
+    try {
+      if (cursor != null && cursor.getCount() > 0) {
+        cursor.moveToFirst();
+        String type = cursor.getString(cursor.getColumnIndexOrThrow(ValueQuery.TYPE));
+        byte[] value = cursor.getBlob(cursor.getColumnIndexOrThrow(ValueQuery.VALUE));
+        return (T) convert(value, type);
+      }
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
     }
+
     return null;
   }
 
@@ -72,9 +84,15 @@ public class SqlStore extends Store {
     final String sql = query.sql();
     final String[] args = query.args();
     Cursor cursor = db.query(sql, args);
-    if (cursor != null && cursor.getCount() > 0) {
-      db.delete(ValueQuery.TABLE, ValueQuery.WHERE_KEY, args);
-      return true;
+    try {
+      if (cursor != null && cursor.getCount() > 0) {
+        db.delete(ValueQuery.TABLE, ValueQuery.WHERE_KEY, args);
+        return true;
+      }
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
     }
     return false;
   }
@@ -85,9 +103,16 @@ public class SqlStore extends Store {
     final String sql = query.sql();
     final String[] args = query.args();
     Cursor cursor = db.query(sql, args);
-    if (cursor != null && cursor.getCount() > 0) {
-      cursor.moveToFirst();
-      return true;
+
+    try {
+      if (cursor != null && cursor.getCount() > 0) {
+        cursor.moveToFirst();
+        return true;
+      }
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
     }
     return false;
   }
