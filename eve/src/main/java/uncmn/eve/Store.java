@@ -1,5 +1,6 @@
 package uncmn.eve;
 
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -87,10 +88,13 @@ public abstract class Store implements Operations {
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param object Object
-   * @param type {@link Class}
    */
-  @Override public void set(String key, Object object, Class type) {
-    set(key, value(converter.serialize(object, type), type));
+  @Override public void set(String key, Object object) {
+    String converterKey = converter.mapping(object);
+    if (converterKey == null) {
+      throw new RuntimeException("Object cannot be converted");
+    }
+    set(key, value(converter.serialize(object), converterKey));
   }
 
   /**
@@ -113,6 +117,28 @@ public abstract class Store implements Operations {
   }
 
   /**
+   * Build {@link Value}.
+   *
+   * @param value byte array of the Object
+   * @param type {@link Class}
+   * @return {@link Value}
+   */
+  protected Value value(byte[] value, String type) {
+    return Value.builder().value(value).type(type).build();
+  }
+
+  /**
+   * @param value byte[] to be converted.
+   * @param converterKey Converter key.
+   * @param <T> type to be converted to.
+   * @return converted object.
+   */
+  @SuppressWarnings({ "unchecked", "UnusedDeclaration" }) protected <T> T convert(byte[] value,
+      String converterKey) {
+    return (T) converter.deserialize(value, converterKey);
+  }
+
+  /**
    * Convert the byte array into {@link Class} type.
    *
    * @param value byte array
@@ -121,9 +147,9 @@ public abstract class Store implements Operations {
    * @return generic Class type
    */
   @SuppressWarnings({ "unchecked", "UnusedDeclaration" }) protected <T> T convert(byte[] value,
-      Class type) {
+      Type type) {
 
-    if (value == null | type == null) {
+    if (type == null) {
       return null;
     }
 
@@ -154,7 +180,7 @@ public abstract class Store implements Operations {
     }
 
     if (object == null) {
-      return (T) converter.deserialize(value, type);
+      return null;
     } else {
       return (T) object;
     }

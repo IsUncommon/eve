@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class SqlStoreOpenHelper extends SQLiteOpenHelper {
 
-  static final String DB_NAME = "eve_kv.store";
+  static final String DB_NAME = "eve_kv_store.db";
   static final int DB_VERSION = 1;
 
   public SqlStoreOpenHelper(Context context) {
