@@ -1,1 +1,1 @@
-include ':sample', ':eve', ':eve-converters:moshi', ':eve-stores:sql'
+include ':sample', ':eve', ':eve-converters:converter-moshi', ':eve-stores:store-sql'
