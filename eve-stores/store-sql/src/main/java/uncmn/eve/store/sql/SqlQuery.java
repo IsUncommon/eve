@@ -16,26 +16,26 @@ import java.util.Map;
 class SqlQuery {
   private static final String TAG = "SqlQuery.class";
 
-  private String mTable = null;
-  private String[] mColumns = null;
-  private Map<String, String> mProjectionMap = new HashMap<String, String>();
-  private StringBuilder mSelection = new StringBuilder();
-  private ArrayList<String> mSelectionArgs = new ArrayList<String>();
-  private String mGroupBy = null;
-  private String mHaving = null;
-  private boolean mDistinct = true;
-  private String mOrderBy = null;
-  private int mLimit = -1;
+  private String table = null;
+  private String[] columns = null;
+  private Map<String, String> projectionMap = new HashMap<String, String>();
+  private StringBuilder selection = new StringBuilder();
+  private ArrayList<String> selectionArgs = new ArrayList<String>();
+  private String groupBy = null;
+  private String having = null;
+  private boolean distinct = true;
+  private String orderBy = null;
+  private int limit = -1;
 
   /**
    * Reset any internal state, allowing this builder to be recycled.
    */
   public SqlQuery reset() {
-    mTable = null;
-    mGroupBy = null;
-    mHaving = null;
-    mSelection.setLength(0);
-    mSelectionArgs.clear();
+    table = null;
+    groupBy = null;
+    having = null;
+    selection.setLength(0);
+    selectionArgs.clear();
     return this;
   }
 
@@ -53,40 +53,40 @@ class SqlQuery {
       return this;
     }
 
-    if (mSelection.length() > 0) {
-      mSelection.append(" AND ");
+    if (this.selection.length() > 0) {
+      this.selection.append(" AND ");
     }
 
-    mSelection.append("(").append(selection).append(")");
+    this.selection.append("(").append(selection).append(")");
     if (selectionArgs != null) {
-      Collections.addAll(mSelectionArgs, selectionArgs);
+      Collections.addAll(this.selectionArgs, selectionArgs);
     }
 
     return this;
   }
 
   public SqlQuery groupBy(String groupBy) {
-    mGroupBy = groupBy;
+    this.groupBy = groupBy;
     return this;
   }
 
   public SqlQuery having(String having) {
-    mHaving = having;
+    this.having = having;
     return this;
   }
 
   public SqlQuery orderBy(String orderBy) {
-    mOrderBy = orderBy;
+    this.orderBy = orderBy;
     return this;
   }
 
   public SqlQuery distinct(boolean distinct) {
-    mDistinct = distinct;
+    this.distinct = distinct;
     return this;
   }
 
   public SqlQuery columns(String[] columns) {
-    this.mColumns = columns;
+    this.columns = columns;
     return this;
   }
 
@@ -100,36 +100,36 @@ class SqlQuery {
       for (int i = 1; i < parts.length; i++) {
         sb.append('"').append(tableParams[i - 1]).append('"').append(parts[i]);
       }
-      mTable = sb.toString();
+      this.table = sb.toString();
     } else {
-      mTable = table;
+      this.table = table;
     }
     return this;
   }
 
   public SqlQuery table(String table) {
-    mTable = table;
+    this.table = table;
     return this;
   }
 
   private void assertTable() {
-    if (mTable == null) {
+    if (table == null) {
       throw new IllegalStateException("Table not specified");
     }
   }
 
   public SqlQuery mapToTable(String column, String table) {
-    mProjectionMap.put(column, table + "." + column);
+    projectionMap.put(column, table + "." + column);
     return this;
   }
 
   public SqlQuery map(String fromColumn, String toClause) {
-    mProjectionMap.put(fromColumn, toClause + " AS " + fromColumn);
+    projectionMap.put(fromColumn, toClause + " AS " + fromColumn);
     return this;
   }
 
   public SqlQuery limit(int limit) {
-    this.mLimit = limit;
+    this.limit = limit;
     return this;
   }
 
@@ -139,7 +139,7 @@ class SqlQuery {
    * @see #getSelectionArgs()
    */
   public String getSelection() {
-    return mSelection.toString();
+    return selection.toString();
   }
 
   /**
@@ -148,12 +148,12 @@ class SqlQuery {
    * @see #getSelection()
    */
   public String[] getSelectionArgs() {
-    return mSelectionArgs.toArray(new String[mSelectionArgs.size()]);
+    return selectionArgs.toArray(new String[selectionArgs.size()]);
   }
 
   private void mapColumns(String[] columns) {
     for (int i = 0; i < columns.length; i++) {
-      final String target = mProjectionMap.get(columns[i]);
+      final String target = projectionMap.get(columns[i]);
       if (target != null) {
         columns[i] = target;
       }
@@ -171,35 +171,38 @@ class SqlQuery {
   public StringBuilder baseQuery() {
     StringBuilder sql = new StringBuilder();
     StringBuilder projection = new StringBuilder();
-    for (int i = 0; i < mColumns.length; i++) {
-      String c = mColumns[i];
+    for (int i = 0; i < columns.length; i++) {
+      String c = columns[i];
       if (i > 0) {
         projection.append(",");
       }
       projection.append(c);
     }
-    sql.append("SELECT ").append(projection.toString()).append(" FROM ").append(mTable);
+    sql.append("SELECT ").append(projection.toString()).append(" FROM ").append(table);
 
-    if (mOrderBy != null) {
-      sql.append(" ORDERBY ").append(mOrderBy);
+    if (orderBy != null) {
+      sql.append(" ORDERBY ").append(orderBy);
     }
 
-    if (mLimit != -1) {
-      sql.append(" LIMIT ").append(mLimit);
+    if (limit != -1) {
+      sql.append(" LIMIT ").append(limit);
     }
 
     return sql;
   }
 
   @Override public String toString() {
-    return "SqlQuery[table="
-        + mTable
-        + ", selection="
-        + getSelection()
-        + ", selectionArgs="
-        + Arrays.toString(getSelectionArgs())
-        + "projectionMap = "
-        + mProjectionMap
-        + " ]";
+    return "SqlQuery{" +
+        "table='" + table + '\'' +
+        ", columns=" + Arrays.toString(columns) +
+        ", projectionMap=" + projectionMap +
+        ", selection=" + selection +
+        ", selectionArgs=" + selectionArgs +
+        ", groupBy='" + groupBy + '\'' +
+        ", having='" + having + '\'' +
+        ", distinct=" + distinct +
+        ", orderBy='" + orderBy + '\'' +
+        ", limit=" + limit +
+        '}';
   }
 }
