@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
 import com.squareup.moshi.Moshi;
+import java.util.Arrays;
 import uncmn.eve.Eve;
 import uncmn.eve.Store;
 import uncmn.eve.converter.moshi.MoshiConverter;
@@ -74,7 +75,49 @@ public class MainActivity extends AppCompatActivity {
     String stringKey = "stringKey";
     String stringValue = "Hello World!";
     store.set(stringKey, stringValue);
-    Log.d(TAG, "Are strings same -- " + store.get(stringKey));
+    same = store.get(stringKey).equals(stringValue);
+    Log.d(TAG, "Are strings same -- " + same);
+
+    String intArrayKey = "intArrayKey";
+    int[] intArrayValue = new int[] { 2, 3, 4 };
+    store.set(intArrayKey, intArrayValue);
+    same = Arrays.toString((int[]) store.get(intArrayKey)).equals(Arrays.toString(intArrayValue));
+    Log.d(TAG, "Are int arrays same -- " + same);
+
+    String floatArrayKey = "floatArrayKey";
+    float[] floatArrayValue = new float[] { 3f, 4f, 5f };
+    store.set(floatArrayKey, floatArrayValue);
+    same = Arrays.toString((float[]) store.get(floatArrayKey))
+        .equals(Arrays.toString(floatArrayValue));
+    Log.d(TAG, "Are float arrays same -- " + same);
+
+    String doubleArrayKey = "doubleArrayKey";
+    double[] doubleArrayValue = new double[] { 3.2, 4.3, 5.4 };
+    store.set(doubleArrayKey, doubleArrayValue);
+    same = Arrays.toString((double[]) store.get(doubleArrayKey))
+        .equals(Arrays.toString(doubleArrayValue));
+    Log.d(TAG, "Are double arrays same -- " + same);
+
+    String longArrayKey = "longArrayKey";
+    long[] longArrayValue = new long[] { 32L, 43L, 54L };
+    store.set(longArrayKey, longArrayValue);
+    same =
+        Arrays.toString((long[]) store.get(longArrayKey)).equals(Arrays.toString(longArrayValue));
+    Log.d(TAG, "Are long arrays same -- " + same);
+
+    String charArrayKey = "charArrayKey";
+    char[] charArrayValue = new char[] { '2', 'A', 'B' };
+    store.set(charArrayKey, charArrayValue);
+    same =
+        Arrays.toString((char[]) store.get(charArrayKey)).equals(Arrays.toString(charArrayValue));
+    Log.d(TAG, "Are char arrays same -- " + same);
+
+    String stringArrayKey = "stringArrayKey";
+    String[] stringArrayValue = new String[] { "Integer", "Long", "Boolean" };
+    store.set(stringArrayKey, stringArrayValue);
+    same = Arrays.toString((String[]) store.get(stringArrayKey))
+        .equals(Arrays.toString(stringArrayValue));
+    Log.d(TAG, "Are string arrays same -- " + same);
 
     ////End Primitives
 

@@ -21,6 +21,17 @@ public abstract class Store implements Operations {
   }
 
   /**
+   * Store {@link int} array.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value int
+   */
+  @Override public void set(String key, int[] value) {
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
    * Store {@link float} or {@link Float}.
    *
    * @param key is a {@link String}, NotNull and Unique
@@ -32,12 +43,34 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link float} or {@link Long}.
+   * Store {@link float} array.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value float array
+   */
+  @Override public void set(String key, float[] value) {
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
+   * Store {@link long} or {@link Long}.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param value long
    */
   @Override public void set(String key, long value) {
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
+   * Store {@link long} array.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value long
+   */
+  @Override public void set(String key, long[] value) {
     String type = eveConverter.mapping(value);
     set(key, value(eveConverter.serialize(value), type));
   }
@@ -49,6 +82,17 @@ public abstract class Store implements Operations {
    * @param value double
    */
   @Override public void set(String key, double value) {
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
+   * Store {@link double} array.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value double array
+   */
+  @Override public void set(String key, double[] value) {
     String type = eveConverter.mapping(value);
     set(key, value(eveConverter.serialize(value), type));
   }
@@ -76,6 +120,17 @@ public abstract class Store implements Operations {
   }
 
   /**
+   * Store {@link char} array.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value char array
+   */
+  @Override public void set(String key, char[] value) {
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
    * Store {@link byte} or {@link Byte}.
    *
    * @param key is a {@link String}, NotNull and Unique
@@ -93,6 +148,17 @@ public abstract class Store implements Operations {
    * @param value {@link String}
    */
   @Override public void set(String key, String value) {
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
+   * Store {@link String} array.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value {@link String} array
+   */
+  @Override public void set(String key, String[] value) {
     String type = eveConverter.mapping(value);
     set(key, value(eveConverter.serialize(value), type));
   }
