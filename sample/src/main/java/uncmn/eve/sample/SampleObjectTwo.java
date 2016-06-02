@@ -14,8 +14,10 @@ import com.squareup.moshi.Moshi;
 
   public abstract int[] items();
 
-  public static SampleObjectTwo create(String name, int[] items) {
-    return new AutoValue_SampleObjectTwo(name, items);
+  public abstract SampleObjectOne objectOne();
+
+  public static SampleObjectTwo create(String name, int[] items, SampleObjectOne objectOne) {
+    return new AutoValue_SampleObjectTwo(name, items, objectOne);
   }
 
   public static JsonAdapter<SampleObjectTwo> jsonAdapter(Moshi moshi) {

@@ -25,6 +25,12 @@ public interface Operations {
 
   /**
    * @param key Unique key string.
+   * @param value long value.
+   */
+  void set(String key, long value);
+
+  /**
+   * @param key Unique key string.
    * @param value boolean value.
    */
   void set(String key, boolean value);
