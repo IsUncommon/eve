@@ -5,7 +5,21 @@ package uncmn.eve;
  */
 public interface Converter {
 
-  <T> T deserialize(byte[] data, Class<T> type);
+  /**
+   * @param data data bytes that are serialized to disk.
+   * @param converterKey Converter key.
+   * @param <T> Type.
+   * @return Deserialized object of type <T>.
+   */
+  <T> T deserialize(byte[] data, String converterKey);
 
-  byte[] serialize(Object object, Class type);
+  /**
+   * @param object Object to be serialized into byte[].
+   */
+  byte[] serialize(Object object);
+
+  /**
+   * @return Converter key of a given object. Null if cannot be determined.
+   */
+  String converterKey(Object object);
 }

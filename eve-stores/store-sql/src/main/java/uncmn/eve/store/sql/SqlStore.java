@@ -63,15 +63,13 @@ public class SqlStore extends Store {
       boolean isPrimitive =
           cursor.getInt(cursor.getColumnIndexOrThrow(ValueQuery.IS_PRIMITIVE)) == 1;
       String c = cursor.getString(cursor.getColumnIndexOrThrow(ValueQuery.TYPE));
-
-      Class<?> type = Types.getClassType(c, isPrimitive);
-
-      if (type == null) {
-        return null;
-      }
-
       byte[] value = cursor.getBlob(cursor.getColumnIndexOrThrow(ValueQuery.VALUE));
-      return convert(value, type);
+      if (isPrimitive) {
+        Class<?> type = Types.getClassType(c, isPrimitive);
+        return convert(value, type);
+      } else {
+        return (T) convert(value, c);
+      }
     }
     return null;
   }

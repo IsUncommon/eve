@@ -44,6 +44,7 @@ public class Value {
 
     byte[] value;
     Type type;
+    String stringType;
     boolean isPrimitive;
 
     public Builder value(byte[] value) {
@@ -56,20 +57,29 @@ public class Value {
       return this;
     }
 
+    public Builder type(String type) {
+      this.stringType = type;
+      return this;
+    }
+
     /**
      * Build the value object.
      *
      * @return Value object.
      */
     public Value build() {
-      if (type == null) {
-        throw new IllegalArgumentException("Type cannot be null");
+      if (type == null && stringType == null) {
+        throw new IllegalArgumentException("Atleast type or string type must be present.");
       }
 
       Value v = new Value();
       v.bytes = value;
-      v.isPrimitive = Types.isPrimitive(type);
-      v.type = Types.typeToString(type);
+      if (type != null) {
+        v.isPrimitive = Types.isPrimitive(type);
+        v.type = Types.typeToString(type);
+      } else {
+        v.type = stringType;
+      }
       return v;
     }
   }
