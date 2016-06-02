@@ -1,1 +1,2 @@
-include ':sample', ':eve', ':eve-converters:converter-moshi', ':eve-stores:store-sql'
+include ':sample', ':eve', ':eve-converters:converter-moshi', ':eve-stores:store-sql',
+    ':eve-converters:converter-gson'
