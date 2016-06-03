@@ -1,5 +1,7 @@
 package uncmn.eve;
 
+import java.util.List;
+
 public abstract class Store implements Operations {
 
   private Converter converter;
@@ -164,7 +166,21 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store an Object of any kind into.
+   * Store {@link String} array.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value {@link String} list, Cannot be empty.
+   */
+  @Override public void set(String key, List<String> value) {
+    if (value.isEmpty()) {
+      throw new RuntimeException("List to be stored cannot be empty");
+    }
+    String type = eveConverter.mapping(value);
+    set(key, value(eveConverter.serialize(value), type));
+  }
+
+  /**
+   * Store an Object of any kind into. Do not use this method to store collection types.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param object Object
@@ -172,7 +188,9 @@ public abstract class Store implements Operations {
   @Override public void set(String key, Object object) {
     String converterKey = converter.mapping(object);
     if (converterKey == null) {
-      throw new RuntimeException("Object cannot be converted");
+      throw new RuntimeException("Have you mapped object with converter.mapping() ? "
+          + "Object cannot be converted -- "
+          + object);
     }
     set(key, value(converter.serialize(object), converterKey));
   }

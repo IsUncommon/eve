@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
 import com.squareup.moshi.Moshi;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import uncmn.eve.Eve;
 import uncmn.eve.Store;
 import uncmn.eve.converter.moshi.MoshiConverter;
@@ -154,5 +156,20 @@ public class MainActivity extends AppCompatActivity {
     Log.d(TAG, "Sample object is -- " + retSample3);
 
     ////End Objects
+
+    ////Start collections.
+    ArrayList<String> stringListValue = new ArrayList<>();
+    stringListValue.add("String1");
+    stringListValue.add("String2");
+    stringListValue.add("String3");
+    String stringListKey = "stringListKey";
+    store.set(stringListKey, stringListValue);
+
+    List<String> retStringListValue = eve.store().get(stringListKey);
+    same = stringListValue.containsAll(retStringListValue) && retStringListValue.containsAll(
+        stringListValue);
+    Log.d(TAG, "Are string list same -- " + same);
+    Log.d(TAG, "Retrieved string list is -- " + retStringListValue);
+    ////End collections.
   }
 }

@@ -1,5 +1,7 @@
 package uncmn.eve;
 
+import java.util.List;
+
 /**
  * Set of operations for known types of Java objects.
  */
@@ -88,6 +90,12 @@ public interface Operations {
    * @param value array of strings.
    */
   void set(String key, String[] value);
+
+  /**
+   * @param key Unique key string.
+   * @param value List of strings.
+   */
+  void set(String key, List<String> value);
 
   /**
    * @param key Unique key string.

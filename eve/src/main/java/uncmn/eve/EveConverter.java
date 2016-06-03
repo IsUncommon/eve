@@ -2,7 +2,9 @@ package uncmn.eve;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +22,7 @@ public class EveConverter implements Converter {
   private static final int LONG_BYTE_SIZE = Long.SIZE / Byte.SIZE;
   private static final int BOOLEAN_BYTE_SIZE = 1;
   private static final int CHARACTER_BYTE_SIZE = Character.SIZE / Byte.SIZE;
+  private static final String STRING_LIST_CONVERTER_KEY = "stringList";
 
   static {
     forward.put(Integer.class.getSimpleName(), Integer.class);
@@ -55,6 +58,7 @@ public class EveConverter implements Converter {
     serializers.put(long[].class.getSimpleName(), new LongArraySerializer());
     serializers.put(char[].class.getSimpleName(), new CharArraySerializer());
     serializers.put(String[].class.getSimpleName(), new StringArraySerializer());
+    serializers.put(STRING_LIST_CONVERTER_KEY, new StringListSerializer());
   }
 
   EveConverter() {
@@ -84,6 +88,15 @@ public class EveConverter implements Converter {
    * @return converter key if one exists, null otherwise.
    */
   @Override public String mapping(Object object) {
+    if (List.class.isAssignableFrom(object.getClass())) {
+      //generic type erasure check, hack with first element
+      List<?> items = (List<?>) object;
+      if (!items.isEmpty()) {
+        if (items.get(0) instanceof String) {
+          return STRING_LIST_CONVERTER_KEY;
+        }
+      }
+    }
     return backward.get(object.getClass());
   }
 
@@ -92,7 +105,7 @@ public class EveConverter implements Converter {
    * @return true if eve converter supports this object conversion, false otherwise.
    */
   public boolean hasMapping(String converterKey) {
-    return forward.containsKey(converterKey);
+    return forward.containsKey(converterKey) || STRING_LIST_CONVERTER_KEY.equals(converterKey);
   }
 
   /**
@@ -415,6 +428,46 @@ public class EveConverter implements Converter {
         strings[i] = new String(nextBytes, UTF_8);
       }
       return strings;
+    }
+  }
+
+  /**
+   * String List serializer.
+   */
+  static class StringListSerializer implements Serializer {
+    public StringListSerializer() {
+    }
+
+    @Override public byte[] serialize(Object value) {
+      List<String> stringList = (List<String>) value;
+      String[] strings = new String[stringList.size()];
+      stringList.toArray(strings);
+      byte[][] stringsBytes = new byte[strings.length][];
+      int totalSize = 4; //first size of the array.
+      for (int i = 0; i < strings.length; i++) {
+        stringsBytes[i] = strings[i].getBytes(UTF_8);
+        totalSize = totalSize + 4 + stringsBytes[i].length;
+      }
+      ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
+      byteBuffer.putInt(strings.length);
+      for (int i = 0; i < stringsBytes.length; i++) {
+        byteBuffer.putInt(stringsBytes[i].length);
+        byteBuffer.put(stringsBytes[i]);
+      }
+      return byteBuffer.array();
+    }
+
+    @Override public Object deserialize(byte[] bytes) {
+      ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+      int size = byteBuffer.getInt();
+      String[] strings = new String[size];
+      for (int i = 0; i < size; i++) {
+        int nextSize = byteBuffer.getInt();
+        byte[] nextBytes = new byte[nextSize];
+        byteBuffer.get(nextBytes);
+        strings[i] = new String(nextBytes, UTF_8);
+      }
+      return Arrays.asList(strings);
     }
   }
 }
