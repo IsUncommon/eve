@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     converter.map(SampleObjectTwo.CONVERTER_KEY, SampleObjectTwo.class);
     SqlStore sqlStore = SqlStore.create(this, converter);
 
-    eve = Eve.builder(this).store(sqlStore).build();
+    eve = Eve.builder().store(sqlStore).build();
     Store store = eve.store();
 
     ////Add Primitives

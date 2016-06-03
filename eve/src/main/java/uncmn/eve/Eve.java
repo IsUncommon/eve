@@ -1,23 +1,19 @@
 package uncmn.eve;
 
-import android.content.Context;
-
 /**
  * An object instance representing Eve.
  * <p>Main entry to the Eve KeyValue store</p>.
  */
 public final class Eve {
 
-  private Context context;
   private Store store;
 
   Eve(Builder builder) {
-    this.context = builder.context;
     this.store = builder.store;
   }
 
-  public static Builder builder(Context context) {
-    return new Builder(context);
+  public static Builder builder() {
+    return new Builder();
   }
 
   public Store store() {
@@ -26,14 +22,10 @@ public final class Eve {
 
   public static class Builder {
 
-    Context context;
     Store store;
 
-    Builder(Context context) {
-      if (context == null) {
-        throw new IllegalArgumentException("Context cannot be null");
-      }
-      this.context = context.getApplicationContext();
+    Builder() {
+
     }
 
     public Builder store(Store store) {
