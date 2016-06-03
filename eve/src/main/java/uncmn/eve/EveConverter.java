@@ -12,6 +12,7 @@ import java.util.Map;
  * int, float, double, boolean, char, byte & String are supported.
  */
 public class EveConverter implements Converter {
+  private static final String EVE_PREFIX = "eve.";
   private static final Map<String, Class<?>> forward = new HashMap<>();
   private static final Map<String, Serializer> serializers = new HashMap<>();
   private static final Map<Class<?>, String> backward = new HashMap<>();
@@ -22,43 +23,43 @@ public class EveConverter implements Converter {
   private static final int LONG_BYTE_SIZE = Long.SIZE / Byte.SIZE;
   private static final int BOOLEAN_BYTE_SIZE = 1;
   private static final int CHARACTER_BYTE_SIZE = Character.SIZE / Byte.SIZE;
-  private static final String STRING_LIST_CONVERTER_KEY = "stringList";
+  private static final String LIST_STRING_CONVERTER_KEY = EVE_PREFIX + "listString";
 
   static {
-    forward.put(Integer.class.getSimpleName(), Integer.class);
-    forward.put(Float.class.getSimpleName(), Float.class);
-    forward.put(Double.class.getSimpleName(), Double.class);
-    forward.put(Long.class.getSimpleName(), Long.class);
-    forward.put(Boolean.class.getSimpleName(), Boolean.class);
-    forward.put(Character.class.getSimpleName(), Character.class);
-    forward.put(Byte.class.getSimpleName(), Byte.class);
-    forward.put(String.class.getSimpleName(), String.class);
-    forward.put(int[].class.getSimpleName(), int[].class);
-    forward.put(float[].class.getSimpleName(), float[].class);
-    forward.put(double[].class.getSimpleName(), double[].class);
-    forward.put(long[].class.getSimpleName(), long[].class);
-    forward.put(char[].class.getSimpleName(), char[].class);
-    forward.put(String[].class.getSimpleName(), String[].class);
+    forward.put(EVE_PREFIX + Integer.class.getSimpleName(), Integer.class);
+    forward.put(EVE_PREFIX + Float.class.getSimpleName(), Float.class);
+    forward.put(EVE_PREFIX + Double.class.getSimpleName(), Double.class);
+    forward.put(EVE_PREFIX + Long.class.getSimpleName(), Long.class);
+    forward.put(EVE_PREFIX + Boolean.class.getSimpleName(), Boolean.class);
+    forward.put(EVE_PREFIX + Character.class.getSimpleName(), Character.class);
+    forward.put(EVE_PREFIX + Byte.class.getSimpleName(), Byte.class);
+    forward.put(EVE_PREFIX + String.class.getSimpleName(), String.class);
+    forward.put(EVE_PREFIX + int[].class.getSimpleName(), int[].class);
+    forward.put(EVE_PREFIX + float[].class.getSimpleName(), float[].class);
+    forward.put(EVE_PREFIX + double[].class.getSimpleName(), double[].class);
+    forward.put(EVE_PREFIX + long[].class.getSimpleName(), long[].class);
+    forward.put(EVE_PREFIX + char[].class.getSimpleName(), char[].class);
+    forward.put(EVE_PREFIX + String[].class.getSimpleName(), String[].class);
 
     for (Map.Entry<String, Class<?>> entry : forward.entrySet()) {
       backward.put(entry.getValue(), entry.getKey());
     }
 
-    serializers.put(Integer.class.getSimpleName(), new IntSerializer());
-    serializers.put(Float.class.getSimpleName(), new FloatSerializer());
-    serializers.put(Double.class.getSimpleName(), new DoubleSerializer());
-    serializers.put(Long.class.getSimpleName(), new LongSerializer());
-    serializers.put(Boolean.class.getSimpleName(), new BooleanSerializer());
-    serializers.put(Character.class.getSimpleName(), new CharSerializer());
-    serializers.put(Byte.class.getSimpleName(), new ByteSerializer());
-    serializers.put(String.class.getSimpleName(), new StringSerializer());
-    serializers.put(int[].class.getSimpleName(), new IntArraySerializer());
-    serializers.put(float[].class.getSimpleName(), new FloatArraySerializer());
-    serializers.put(double[].class.getSimpleName(), new DoubleArraySerializer());
-    serializers.put(long[].class.getSimpleName(), new LongArraySerializer());
-    serializers.put(char[].class.getSimpleName(), new CharArraySerializer());
-    serializers.put(String[].class.getSimpleName(), new StringArraySerializer());
-    serializers.put(STRING_LIST_CONVERTER_KEY, new StringListSerializer());
+    serializers.put(EVE_PREFIX + Integer.class.getSimpleName(), new IntSerializer());
+    serializers.put(EVE_PREFIX + Float.class.getSimpleName(), new FloatSerializer());
+    serializers.put(EVE_PREFIX + Double.class.getSimpleName(), new DoubleSerializer());
+    serializers.put(EVE_PREFIX + Long.class.getSimpleName(), new LongSerializer());
+    serializers.put(EVE_PREFIX + Boolean.class.getSimpleName(), new BooleanSerializer());
+    serializers.put(EVE_PREFIX + Character.class.getSimpleName(), new CharSerializer());
+    serializers.put(EVE_PREFIX + Byte.class.getSimpleName(), new ByteSerializer());
+    serializers.put(EVE_PREFIX + String.class.getSimpleName(), new StringSerializer());
+    serializers.put(EVE_PREFIX + int[].class.getSimpleName(), new IntArraySerializer());
+    serializers.put(EVE_PREFIX + float[].class.getSimpleName(), new FloatArraySerializer());
+    serializers.put(EVE_PREFIX + double[].class.getSimpleName(), new DoubleArraySerializer());
+    serializers.put(EVE_PREFIX + long[].class.getSimpleName(), new LongArraySerializer());
+    serializers.put(EVE_PREFIX + char[].class.getSimpleName(), new CharArraySerializer());
+    serializers.put(EVE_PREFIX + String[].class.getSimpleName(), new StringArraySerializer());
+    serializers.put(LIST_STRING_CONVERTER_KEY, new ListStringSerializer());
   }
 
   EveConverter() {
@@ -93,7 +94,7 @@ public class EveConverter implements Converter {
       List<?> items = (List<?>) object;
       if (!items.isEmpty()) {
         if (items.get(0) instanceof String) {
-          return STRING_LIST_CONVERTER_KEY;
+          return LIST_STRING_CONVERTER_KEY;
         }
       }
     }
@@ -105,7 +106,7 @@ public class EveConverter implements Converter {
    * @return true if eve converter supports this object conversion, false otherwise.
    */
   public boolean hasMapping(String converterKey) {
-    return forward.containsKey(converterKey) || STRING_LIST_CONVERTER_KEY.equals(converterKey);
+    return forward.containsKey(converterKey) || LIST_STRING_CONVERTER_KEY.equals(converterKey);
   }
 
   /**
@@ -434,8 +435,8 @@ public class EveConverter implements Converter {
   /**
    * String List serializer.
    */
-  static class StringListSerializer implements Serializer {
-    public StringListSerializer() {
+  static class ListStringSerializer implements Serializer {
+    public ListStringSerializer() {
     }
 
     @Override public byte[] serialize(Object value) {

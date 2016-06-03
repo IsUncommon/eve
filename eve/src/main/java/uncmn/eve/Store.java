@@ -1,8 +1,11 @@
 package uncmn.eve;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Store implements Operations {
+  private static final String LIST_KEY_PREFIX = "eve.list-";
 
   private Converter converter;
   private EveConverter eveConverter = new EveConverter();
@@ -166,21 +169,7 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Store {@link String} array.
-   *
-   * @param key is a {@link String}, NotNull and Unique
-   * @param value {@link String} list, Cannot be empty.
-   */
-  @Override public void set(String key, List<String> value) {
-    if (value.isEmpty()) {
-      throw new RuntimeException("List to be stored cannot be empty");
-    }
-    String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
-  }
-
-  /**
-   * Store an Object of any kind into. Do not use this method to store collection types.
+   * Store an Object of any kind into.
    *
    * @param key is a {@link String}, NotNull and Unique
    * @param object Object
@@ -193,6 +182,43 @@ public abstract class Store implements Operations {
           + object);
     }
     set(key, value(converter.serialize(object), converterKey));
+  }
+
+  /**
+   * @param key Unique key string.
+   * @param value A non empty homogeneous list of objects. Entire list should contain objects of
+   */
+  @Override public void set(String key, List<?> value) {
+    if (value.isEmpty()) {
+      throw new RuntimeException("List to be stored cannot be empty");
+    }
+    String type = eveConverter.mapping(value);
+    if (type != null) {
+      set(key, value(eveConverter.serialize(value), type));
+    } else {
+      Object object = value.get(0);
+      String converterKey = converter.mapping(object);
+      if (converterKey == null) {
+        throw new RuntimeException("Have you mapped object with converter.mapping() ? "
+            + "Object cannot be converted -- "
+            + object);
+      }
+
+      byte[][] objectBytes = new byte[value.size()][];
+      int totalSize = 4; //first size of the array.
+      for (int i = 0; i < value.size(); i++) {
+        objectBytes[i] = converter.serialize(value.get(i));
+        totalSize = totalSize + 4 + objectBytes[i].length;
+      }
+      ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
+      byteBuffer.putInt(value.size());
+      for (int i = 0; i < objectBytes.length; i++) {
+        byteBuffer.putInt(objectBytes[i].length);
+        byteBuffer.put(objectBytes[i]);
+      }
+      String listKey = LIST_KEY_PREFIX + converterKey;
+      set(key, value(byteBuffer.array(), listKey));
+    }
   }
 
   /**
@@ -224,8 +250,31 @@ public abstract class Store implements Operations {
       String converterKey) {
     if (eveConverter.hasMapping(converterKey)) {
       return (T) eveConverter.deserialize(value, converterKey);
+    } else if (converterKey.startsWith(LIST_KEY_PREFIX)) {
+      return convertList(value, converterKey);
     }
     return (T) converter.deserialize(value, converterKey);
+  }
+
+  /**
+   * @param value byte[] to be converted.
+   * @param converterKey Converter key.
+   * @param <T> type to be converted to.
+   * @return converted list.
+   */
+  @SuppressWarnings({ "unchecked", "UnusedDeclaration" }) protected <T> T convertList(byte[] value,
+      String converterKey) {
+    String actualConverterKey = converterKey.split(LIST_KEY_PREFIX)[1];
+    ByteBuffer byteBuffer = ByteBuffer.wrap(value);
+    int size = byteBuffer.getInt();
+    Object[] objects = new Object[size];
+    for (int i = 0; i < size; i++) {
+      int nextSize = byteBuffer.getInt();
+      byte[] nextBytes = new byte[nextSize];
+      byteBuffer.get(nextBytes);
+      objects[i] = converter.deserialize(nextBytes, actualConverterKey);
+    }
+    return (T) Arrays.asList(objects);
   }
 
   /**

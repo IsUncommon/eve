@@ -170,6 +170,21 @@ public class MainActivity extends AppCompatActivity {
         stringListValue);
     Log.d(TAG, "Are string list same -- " + same);
     Log.d(TAG, "Retrieved string list is -- " + retStringListValue);
+
+    ArrayList<SampleObjectTwo> sampleObjectTwoArrayList = new ArrayList<>();
+    sampleObjectTwoArrayList.add(sample1);
+    sampleObjectTwoArrayList.add(sample2);
+    sampleObjectTwoArrayList.add(sample3);
+    String objectListKey = "objectListKey";
+    store.set(objectListKey, sampleObjectTwoArrayList);
+
+    List<SampleObjectTwo> retObjectListValue = eve.store().get(objectListKey);
+    same =
+        sampleObjectTwoArrayList.containsAll(retObjectListValue) && retObjectListValue.containsAll(
+            sampleObjectTwoArrayList);
+    Log.d(TAG, "Are string list same -- " + same);
+    Log.d(TAG, "Retrieved object list is -- " + sampleObjectTwoArrayList);
+
     ////End collections.
   }
 }

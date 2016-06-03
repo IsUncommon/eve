@@ -92,14 +92,17 @@ public interface Operations {
   void set(String key, String[] value);
 
   /**
-   * @param key Unique key string.
-   * @param value List of strings.
-   */
-  void set(String key, List<String> value);
-
-  /**
-   * @param key Unique key string.
+   * @param key Unique key string. Do not use this method to store collection types.
+   * See {@linkplain #setList(String, List)}
    * @param value An object that can be converted with {@linkplain Converter}.
    */
   void set(String key, Object value);
+
+  /**
+   * @param key Unique key string.
+   * @param value A non empty homogeneous list of objects. Entire list should contain objects of
+   * same type. This object should be convertable with {@linkplain Converter},
+   * String list handled internally and does not need any converter mapping.
+   */
+  void set(String key, List<?> value);
 }
