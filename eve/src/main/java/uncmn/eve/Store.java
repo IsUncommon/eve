@@ -6,6 +6,7 @@ import java.util.List;
 
 public abstract class Store implements Operations {
   private static final String LIST_KEY_PREFIX = "eve.list-";
+  private static final Object storeLock = new Object();
 
   private Converter converter;
   private EveConverter eveConverter = new EveConverter();
@@ -22,7 +23,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, int value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -33,7 +36,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, int[] value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -44,7 +49,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, float value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -55,7 +62,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, float[] value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -66,7 +75,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, long value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -77,7 +88,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, long[] value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -88,7 +101,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, double value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -99,7 +114,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, double[] value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -110,7 +127,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, boolean value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -121,7 +140,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, char value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -132,7 +153,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, char[] value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -143,7 +166,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, byte value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -154,7 +179,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, String value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -165,7 +192,9 @@ public abstract class Store implements Operations {
    */
   @Override public void set(String key, String[] value) {
     String type = eveConverter.mapping(value);
-    set(key, value(eveConverter.serialize(value), type));
+    synchronized (storeLock) {
+      set(key, value(eveConverter.serialize(value), type));
+    }
   }
 
   /**
@@ -181,7 +210,9 @@ public abstract class Store implements Operations {
           + "Object cannot be converted -- "
           + object);
     }
-    set(key, value(converter.serialize(object), converterKey));
+    synchronized (storeLock) {
+      set(key, value(converter.serialize(object), converterKey));
+    }
   }
 
   /**
@@ -192,32 +223,34 @@ public abstract class Store implements Operations {
     if (value.isEmpty()) {
       throw new RuntimeException("List to be stored cannot be empty");
     }
-    String type = eveConverter.mapping(value);
-    if (type != null) {
-      set(key, value(eveConverter.serialize(value), type));
-    } else {
-      Object object = value.get(0);
-      String converterKey = converter.mapping(object);
-      if (converterKey == null) {
-        throw new RuntimeException("Have you mapped object with converter.mapping() ? "
-            + "Object cannot be converted -- "
-            + object);
-      }
+    synchronized (storeLock) {
+      String type = eveConverter.mapping(value);
+      if (type != null) {
+        set(key, value(eveConverter.serialize(value), type));
+      } else {
+        Object object = value.get(0);
+        String converterKey = converter.mapping(object);
+        if (converterKey == null) {
+          throw new RuntimeException("Have you mapped object with converter.mapping() ? "
+              + "Object cannot be converted -- "
+              + object);
+        }
 
-      byte[][] objectBytes = new byte[value.size()][];
-      int totalSize = 4; //first size of the array.
-      for (int i = 0; i < value.size(); i++) {
-        objectBytes[i] = converter.serialize(value.get(i));
-        totalSize = totalSize + 4 + objectBytes[i].length;
+        byte[][] objectBytes = new byte[value.size()][];
+        int totalSize = 4; //first size of the array.
+        for (int i = 0; i < value.size(); i++) {
+          objectBytes[i] = converter.serialize(value.get(i));
+          totalSize = totalSize + 4 + objectBytes[i].length;
+        }
+        ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
+        byteBuffer.putInt(value.size());
+        for (int i = 0; i < objectBytes.length; i++) {
+          byteBuffer.putInt(objectBytes[i].length);
+          byteBuffer.put(objectBytes[i]);
+        }
+        String listKey = LIST_KEY_PREFIX + converterKey;
+        set(key, value(byteBuffer.array(), listKey));
       }
-      ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
-      byteBuffer.putInt(value.size());
-      for (int i = 0; i < objectBytes.length; i++) {
-        byteBuffer.putInt(objectBytes[i].length);
-        byteBuffer.put(objectBytes[i]);
-      }
-      String listKey = LIST_KEY_PREFIX + converterKey;
-      set(key, value(byteBuffer.array(), listKey));
     }
   }
 
@@ -248,12 +281,14 @@ public abstract class Store implements Operations {
    */
   @SuppressWarnings({ "unchecked", "UnusedDeclaration" }) protected <T> T convert(byte[] value,
       String converterKey) {
-    if (eveConverter.hasMapping(converterKey)) {
-      return (T) eveConverter.deserialize(value, converterKey);
-    } else if (converterKey.startsWith(LIST_KEY_PREFIX)) {
-      return convertList(value, converterKey);
+    synchronized (storeLock) {
+      if (eveConverter.hasMapping(converterKey)) {
+        return (T) eveConverter.deserialize(value, converterKey);
+      } else if (converterKey.startsWith(LIST_KEY_PREFIX)) {
+        return convertList(value, converterKey);
+      }
+      return (T) converter.deserialize(value, converterKey);
     }
-    return (T) converter.deserialize(value, converterKey);
   }
 
   /**
