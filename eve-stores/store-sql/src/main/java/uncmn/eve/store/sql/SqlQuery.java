@@ -192,17 +192,31 @@ class SqlQuery {
   }
 
   @Override public String toString() {
-    return "SqlQuery{" +
-        "table='" + table + '\'' +
-        ", columns=" + Arrays.toString(columns) +
-        ", projectionMap=" + projectionMap +
-        ", selection=" + selection +
-        ", selectionArgs=" + selectionArgs +
-        ", groupBy='" + groupBy + '\'' +
-        ", having='" + having + '\'' +
-        ", distinct=" + distinct +
-        ", orderBy='" + orderBy + '\'' +
-        ", limit=" + limit +
-        '}';
+    return "SqlQuery{"
+        + "table='"
+        + table
+        + '\''
+        + ", columns="
+        + Arrays.toString(columns)
+        + ", projectionMap="
+        + projectionMap
+        + ", selection="
+        + selection
+        + ", selectionArgs="
+        + selectionArgs
+        + ", groupBy='"
+        + groupBy
+        + '\''
+        + ", having='"
+        + having
+        + '\''
+        + ", distinct="
+        + distinct
+        + ", orderBy='"
+        + orderBy
+        + '\''
+        + ", limit="
+        + limit
+        + '}';
   }
 }

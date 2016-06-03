@@ -22,6 +22,7 @@ public class MoshiConverter implements Converter {
 
   /**
    * @param converterKey Unique converter key. This is the key that will be persisted in the db.
+   * ConverterKey cannot start with prefix "eve.", it is used internally.
    * @param converterClass Class that should be mapped for this key.
    */
   public <T> void map(String converterKey, Class<T> converterClass) {
