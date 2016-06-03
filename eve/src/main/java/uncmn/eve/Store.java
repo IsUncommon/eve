@@ -244,9 +244,9 @@ public abstract class Store implements Operations {
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
         byteBuffer.putInt(value.size());
-        for (int i = 0; i < objectBytes.length; i++) {
-          byteBuffer.putInt(objectBytes[i].length);
-          byteBuffer.put(objectBytes[i]);
+        for (byte[] objectByte : objectBytes) {
+          byteBuffer.putInt(objectByte.length);
+          byteBuffer.put(objectByte);
         }
         String listKey = LIST_KEY_PREFIX + converterKey;
         set(key, value(byteBuffer.array(), listKey));
@@ -322,15 +322,6 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Get value for key from store.
-   *
-   * @param key is a {@link String}, NotNull and Unique
-   * @param <T> generic return type
-   * @return generic return type
-   */
-  public abstract <T> T get(String key);
-
-  /**
    * Delete key.
    *
    * @param key is a {@link String}, NotNull and Unique
@@ -345,4 +336,38 @@ public abstract class Store implements Operations {
    * @return true if key exists false otherwise
    */
   public abstract boolean exists(String key);
+
+  <T> List<Entry<T>> queryKeyPrefix(Class<T> clazz, String keyPrefix) {
+    String converterKey = eveConverter.mapping(clazz);
+    if (converterKey == null) {
+      converterKey = converter.mapping(clazz);
+    }
+    return queryKeyPrefix(converterKey, keyPrefix);
+  }
+
+  protected abstract <T> List<Entry<T>> queryKeyPrefix(String converterKey, String keyPrefix);
+
+  <T> List<Entry<T>> queryKeyContains(Class<T> clazz, String keyContains) {
+    String converterKey = eveConverter.mapping(clazz);
+    if (converterKey == null) {
+      converterKey = converter.mapping(clazz);
+    }
+    return queryKeyContains(converterKey, keyContains);
+  }
+
+  protected abstract <T> List<Entry<T>> queryKeyContains(String converterKey, String keyContains);
+
+  @Override public Query query() {
+    return new Query(this);
+  }
+
+  <T> List<Entry<T>> query(Class<T> clazz) {
+    String converterKey = eveConverter.mapping(clazz);
+    if (converterKey == null) {
+      converterKey = converter.mapping(clazz);
+    }
+    return query(converterKey);
+  }
+
+  protected abstract <T> List<Entry<T>> query(String converterKey);
 }

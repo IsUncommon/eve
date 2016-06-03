@@ -101,6 +101,10 @@ public class EveConverter implements Converter {
     return backward.get(object.getClass());
   }
 
+  @Override public String mapping(Class<?> clazz) {
+    return backward.get(clazz);
+  }
+
   /**
    * @param converterKey converter key for which eve converter is supported.
    * @return true if eve converter supports this object conversion, false otherwise.

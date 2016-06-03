@@ -93,7 +93,7 @@ public interface Operations {
 
   /**
    * @param key Unique key string. Do not use this method to store collection types.
-   * See {@linkplain #setList(String, List)}
+   * See {@linkplain #set(String, List)}
    * @param value An object that can be converted with {@linkplain Converter}.
    */
   void set(String key, Object value);
@@ -105,4 +105,20 @@ public interface Operations {
    * String list handled internally and does not need any converter mapping.
    */
   void set(String key, List<?> value);
+
+  /**
+   * Get value for key from store.
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param <T> generic return type
+   * @return generic return type
+   */
+  <T> T get(String key);
+
+  /**
+   * A generic query.
+   *
+   * @return {@linkplain Query} instance.
+   */
+  Query query();
 }

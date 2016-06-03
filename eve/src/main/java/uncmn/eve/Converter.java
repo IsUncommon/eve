@@ -22,4 +22,9 @@ public interface Converter {
    * @return Converter key of a given object. Null if cannot be determined.
    */
   String mapping(Object object);
+
+  /**
+   * @return Converter key of a given class. Null if cannot be determined.
+   */
+  String mapping(Class<?> clazz);
 }

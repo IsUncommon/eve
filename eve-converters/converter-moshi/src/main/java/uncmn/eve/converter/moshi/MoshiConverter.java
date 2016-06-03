@@ -99,4 +99,14 @@ public class MoshiConverter implements Converter {
     }
     return null;
   }
+
+  @Override public String mapping(Class<?> clazz) {
+    for (Map.Entry<String, Class<?>> item : converterMappings.entrySet()) {
+      boolean bool = item.getValue().isAssignableFrom(clazz);
+      if (bool) {
+        return item.getKey();
+      }
+    }
+    return null;
+  }
 }

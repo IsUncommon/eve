@@ -8,6 +8,7 @@ import com.squareup.moshi.Moshi;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import uncmn.eve.Entry;
 import uncmn.eve.Eve;
 import uncmn.eve.Store;
 import uncmn.eve.converter.moshi.MoshiConverter;
@@ -186,5 +187,10 @@ public class MainActivity extends AppCompatActivity {
     Log.d(TAG, "Retrieved object list is -- " + sampleObjectTwoArrayList);
 
     ////End collections.
+
+    ////start query
+    List<Entry<SampleObjectOne>> result =
+        store.query().keyContains("plex").run(SampleObjectOne.class);
+    Log.w(TAG, "Retrieved query -- " + result);
   }
 }
