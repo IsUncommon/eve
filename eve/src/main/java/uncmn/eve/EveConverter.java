@@ -112,32 +112,32 @@ public class EveConverter implements Converter {
   /**
    * Eve serializer.
    */
-  interface Serializer {
+  interface Serializer<T> {
     /**
      * @param value Value to be serialized.
      * @return byte[] representation of value.
      */
-    byte[] serialize(Object value);
+    byte[] serialize(T value);
 
     /**
      * @param bytes bytes to be converted.
      * @return Object representation of bytes.
      */
-    Object deserialize(byte[] bytes);
+    T deserialize(byte[] bytes);
   }
 
   /**
    * Int serializer.
    */
-  static class IntSerializer implements Serializer {
+  static class IntSerializer implements Serializer<Integer> {
     public IntSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
+    @Override public byte[] serialize(Integer value) {
       return ByteBuffer.allocate(INT_BYTE_SIZE).putInt((int) value).array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public Integer deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       return byteBuffer.getInt();
     }
@@ -146,20 +146,20 @@ public class EveConverter implements Converter {
   /**
    * Int Array serializer.
    */
-  static class IntArraySerializer implements Serializer {
+  static class IntArraySerializer implements Serializer<int[]> {
+
     public IntArraySerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      int[] ints = (int[]) value;
-      ByteBuffer buffer = ByteBuffer.allocate(INT_BYTE_SIZE * ints.length);
-      for (int i = 0; i < ints.length; i++) {
-        buffer.putInt(ints[i]);
+    @Override public byte[] serialize(int[] value) {
+      ByteBuffer buffer = ByteBuffer.allocate(INT_BYTE_SIZE * value.length);
+      for (int i = 0; i < value.length; i++) {
+        buffer.putInt(value[i]);
       }
       return buffer.array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public int[] deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       int[] ints = new int[bytes.length / INT_BYTE_SIZE];
       for (int i = 0; i < ints.length; i++) {
@@ -172,15 +172,15 @@ public class EveConverter implements Converter {
   /**
    * Float serializer.
    */
-  static class FloatSerializer implements Serializer {
+  static class FloatSerializer implements Serializer<Float> {
     public FloatSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
+    @Override public byte[] serialize(Float value) {
       return ByteBuffer.allocate(FLOAT_BYTE_SIZE).putFloat((float) value).array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public Float deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       return byteBuffer.getFloat();
     }
@@ -189,20 +189,19 @@ public class EveConverter implements Converter {
   /**
    * Float array serializer.
    */
-  static class FloatArraySerializer implements Serializer {
+  static class FloatArraySerializer implements Serializer<float[]> {
     public FloatArraySerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      float[] floats = (float[]) value;
-      ByteBuffer buffer = ByteBuffer.allocate(FLOAT_BYTE_SIZE * floats.length);
-      for (int i = 0; i < floats.length; i++) {
-        buffer.putFloat(floats[i]);
+    @Override public byte[] serialize(float[] value) {
+      ByteBuffer buffer = ByteBuffer.allocate(FLOAT_BYTE_SIZE * value.length);
+      for (int i = 0; i < value.length; i++) {
+        buffer.putFloat(value[i]);
       }
       return buffer.array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public float[] deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       float[] floats = new float[bytes.length / FLOAT_BYTE_SIZE];
       for (int i = 0; i < floats.length; i++) {
@@ -215,15 +214,15 @@ public class EveConverter implements Converter {
   /**
    * Double serializer.
    */
-  static class DoubleSerializer implements Serializer {
+  static class DoubleSerializer implements Serializer<Double> {
     public DoubleSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      return ByteBuffer.allocate(DOUBLE_BYTE_SIZE).putDouble((double) value).array();
+    @Override public byte[] serialize(Double value) {
+      return ByteBuffer.allocate(DOUBLE_BYTE_SIZE).putDouble(value).array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public Double deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       return byteBuffer.getDouble();
     }
@@ -232,20 +231,19 @@ public class EveConverter implements Converter {
   /**
    * Double array serializer.
    */
-  static class DoubleArraySerializer implements Serializer {
+  static class DoubleArraySerializer implements Serializer<double[]> {
     public DoubleArraySerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      double[] doubles = (double[]) value;
-      ByteBuffer buffer = ByteBuffer.allocate(DOUBLE_BYTE_SIZE * doubles.length);
-      for (int i = 0; i < doubles.length; i++) {
-        buffer.putDouble(doubles[i]);
+    @Override public byte[] serialize(double[] value) {
+      ByteBuffer buffer = ByteBuffer.allocate(DOUBLE_BYTE_SIZE * value.length);
+      for (int i = 0; i < value.length; i++) {
+        buffer.putDouble(value[i]);
       }
       return buffer.array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public double[] deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       double[] doubles = new double[bytes.length / DOUBLE_BYTE_SIZE];
       for (int i = 0; i < doubles.length; i++) {
@@ -258,15 +256,15 @@ public class EveConverter implements Converter {
   /**
    * Long serializer.
    */
-  static class LongSerializer implements Serializer {
+  static class LongSerializer implements Serializer<Long> {
     public LongSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      return ByteBuffer.allocate(LONG_BYTE_SIZE).putLong((long) value).array();
+    @Override public byte[] serialize(Long value) {
+      return ByteBuffer.allocate(LONG_BYTE_SIZE).putLong(value).array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public Long deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       return byteBuffer.getLong();
     }
@@ -275,20 +273,19 @@ public class EveConverter implements Converter {
   /**
    * Long array serializer.
    */
-  static class LongArraySerializer implements Serializer {
+  static class LongArraySerializer implements Serializer<long[]> {
     public LongArraySerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      long[] longs = (long[]) value;
-      ByteBuffer buffer = ByteBuffer.allocate(LONG_BYTE_SIZE * longs.length);
-      for (int i = 0; i < longs.length; i++) {
-        buffer.putLong(longs[i]);
+    @Override public byte[] serialize(long[] value) {
+      ByteBuffer buffer = ByteBuffer.allocate(LONG_BYTE_SIZE * value.length);
+      for (int i = 0; i < value.length; i++) {
+        buffer.putLong(value[i]);
       }
       return buffer.array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public long[] deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       long[] longs = new long[bytes.length / LONG_BYTE_SIZE];
       for (int i = 0; i < longs.length; i++) {
@@ -301,17 +298,15 @@ public class EveConverter implements Converter {
   /**
    * Boolean serializer.
    */
-  static class BooleanSerializer implements Serializer {
+  static class BooleanSerializer implements Serializer<Boolean> {
     public BooleanSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      return ByteBuffer.allocate(BOOLEAN_BYTE_SIZE)
-          .put(((boolean) value) ? (byte) 1 : (byte) 0)
-          .array();
+    @Override public byte[] serialize(Boolean value) {
+      return ByteBuffer.allocate(BOOLEAN_BYTE_SIZE).put((value) ? (byte) 1 : (byte) 0).array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public Boolean deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       byte val = byteBuffer.get();
       return val == ((byte) 1);
@@ -321,15 +316,15 @@ public class EveConverter implements Converter {
   /**
    * Char serializer.
    */
-  static class CharSerializer implements Serializer {
+  static class CharSerializer implements Serializer<Character> {
     public CharSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      return ByteBuffer.allocate(CHARACTER_BYTE_SIZE).putChar((char) value).array();
+    @Override public byte[] serialize(Character value) {
+      return ByteBuffer.allocate(CHARACTER_BYTE_SIZE).putChar(value).array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public Character deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       return byteBuffer.getChar();
     }
@@ -338,20 +333,19 @@ public class EveConverter implements Converter {
   /**
    * Long array serializer.
    */
-  static class CharArraySerializer implements Serializer {
+  static class CharArraySerializer implements Serializer<char[]> {
     public CharArraySerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      char[] chars = (char[]) value;
-      ByteBuffer buffer = ByteBuffer.allocate(CHARACTER_BYTE_SIZE * chars.length);
-      for (int i = 0; i < chars.length; i++) {
-        buffer.putChar(chars[i]);
+    @Override public byte[] serialize(char[] value) {
+      ByteBuffer buffer = ByteBuffer.allocate(CHARACTER_BYTE_SIZE * value.length);
+      for (int i = 0; i < value.length; i++) {
+        buffer.putChar(value[i]);
       }
       return buffer.array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public char[] deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       char[] chars = new char[bytes.length / CHARACTER_BYTE_SIZE];
       for (int i = 0; i < chars.length; i++) {
@@ -364,15 +358,15 @@ public class EveConverter implements Converter {
   /**
    * Byte serializer.
    */
-  static class ByteSerializer implements Serializer {
+  static class ByteSerializer implements Serializer<Byte> {
     public ByteSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
+    @Override public byte[] serialize(Byte value) {
       return ByteBuffer.allocate(1).put((byte) value).array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public Byte deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       return byteBuffer.get();
     }
@@ -381,15 +375,15 @@ public class EveConverter implements Converter {
   /**
    * String serializer.
    */
-  static class StringSerializer implements Serializer {
+  static class StringSerializer implements Serializer<String> {
     public StringSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      return ((String) value).getBytes(UTF_8);
+    @Override public byte[] serialize(String value) {
+      return (value).getBytes(UTF_8);
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public String deserialize(byte[] bytes) {
       return new String(bytes, UTF_8);
     }
   }
@@ -397,20 +391,19 @@ public class EveConverter implements Converter {
   /**
    * String Array serializer.
    */
-  static class StringArraySerializer implements Serializer {
+  static class StringArraySerializer implements Serializer<String[]> {
     public StringArraySerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      String[] strings = (String[]) value;
-      byte[][] stringsBytes = new byte[strings.length][];
+    @Override public byte[] serialize(String[] value) {
+      byte[][] stringsBytes = new byte[value.length][];
       int totalSize = 4; //first size of the array.
-      for (int i = 0; i < strings.length; i++) {
-        stringsBytes[i] = strings[i].getBytes(UTF_8);
+      for (int i = 0; i < value.length; i++) {
+        stringsBytes[i] = value[i].getBytes(UTF_8);
         totalSize = totalSize + 4 + stringsBytes[i].length;
       }
       ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
-      byteBuffer.putInt(strings.length);
+      byteBuffer.putInt(value.length);
       for (int i = 0; i < stringsBytes.length; i++) {
         byteBuffer.putInt(stringsBytes[i].length);
         byteBuffer.put(stringsBytes[i]);
@@ -418,7 +411,7 @@ public class EveConverter implements Converter {
       return byteBuffer.array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public String[] deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       int size = byteBuffer.getInt();
       String[] strings = new String[size];
@@ -435,14 +428,15 @@ public class EveConverter implements Converter {
   /**
    * String List serializer.
    */
-  static class ListStringSerializer implements Serializer {
+  static class ListStringSerializer implements Serializer<List<String>> {
+
     public ListStringSerializer() {
     }
 
-    @Override public byte[] serialize(Object value) {
-      List<String> stringList = (List<String>) value;
-      String[] strings = new String[stringList.size()];
-      stringList.toArray(strings);
+    @Override public byte[] serialize(List<String> value) {
+
+      String[] strings = new String[value.size()];
+      value.toArray(strings);
       byte[][] stringsBytes = new byte[strings.length][];
       int totalSize = 4; //first size of the array.
       for (int i = 0; i < strings.length; i++) {
@@ -458,7 +452,7 @@ public class EveConverter implements Converter {
       return byteBuffer.array();
     }
 
-    @Override public Object deserialize(byte[] bytes) {
+    @Override public List<String> deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       int size = byteBuffer.getInt();
       String[] strings = new String[size];
