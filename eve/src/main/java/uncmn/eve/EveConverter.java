@@ -39,6 +39,7 @@ public class EveConverter implements Converter {
     forward.put(EVE_PREFIX + double[].class.getSimpleName(), double[].class);
     forward.put(EVE_PREFIX + long[].class.getSimpleName(), long[].class);
     forward.put(EVE_PREFIX + char[].class.getSimpleName(), char[].class);
+    forward.put(EVE_PREFIX + byte[].class.getSimpleName(), byte[].class);
     forward.put(EVE_PREFIX + String[].class.getSimpleName(), String[].class);
 
     for (Map.Entry<String, Class<?>> entry : forward.entrySet()) {
@@ -58,6 +59,7 @@ public class EveConverter implements Converter {
     serializers.put(EVE_PREFIX + double[].class.getSimpleName(), new DoubleArraySerializer());
     serializers.put(EVE_PREFIX + long[].class.getSimpleName(), new LongArraySerializer());
     serializers.put(EVE_PREFIX + char[].class.getSimpleName(), new CharArraySerializer());
+    serializers.put(EVE_PREFIX + byte[].class.getSimpleName(), new ByteArraySerializer());
     serializers.put(EVE_PREFIX + String[].class.getSimpleName(), new StringArraySerializer());
     serializers.put(LIST_STRING_CONVERTER_KEY, new ListStringSerializer());
   }
@@ -373,6 +375,17 @@ public class EveConverter implements Converter {
     @Override public Byte deserialize(byte[] bytes) {
       ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
       return byteBuffer.get();
+    }
+  }
+
+  static class ByteArraySerializer implements Serializer<byte[]> {
+
+    @Override public byte[] serialize(byte[] value) {
+      return value;
+    }
+
+    @Override public byte[] deserialize(byte[] bytes) {
+      return bytes;
     }
   }
 

@@ -173,6 +173,19 @@ public abstract class Store implements Operations {
   }
 
   /**
+   * Store {@link byte} array
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value byte array.
+   */
+  @Override public void set(String key, byte[] value) {
+    String type = eveConverter.mapping(value);
+    synchronized (storeLock) {
+      set(key, value(value, type));
+    }
+  }
+
+  /**
    * Store {@link String}.
    *
    * @param key is a {@link String}, NotNull and Unique

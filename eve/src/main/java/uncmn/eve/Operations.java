@@ -81,6 +81,12 @@ public interface Operations {
 
   /**
    * @param key Unique key string.
+   * @param value byte array.
+   */
+  void set(String key, byte[] value);
+
+  /**
+   * @param key Unique key string.
    * @param value String value.
    */
   void set(String key, String value);
