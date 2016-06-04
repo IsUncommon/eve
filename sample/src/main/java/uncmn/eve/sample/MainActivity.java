@@ -4,27 +4,34 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
+import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.Moshi;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import okio.BufferedSource;
+import okio.Okio;
 import uncmn.eve.Entry;
 import uncmn.eve.Eve;
 import uncmn.eve.Store;
 import uncmn.eve.converter.moshi.MoshiConverter;
+import uncmn.eve.sample.gist.Gist;
 import uncmn.eve.store.sql.SqlStore;
 
 public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
+  Moshi moshi = new Moshi.Builder().add(new AutoValueMoshiAdapterFactory()).build();
   Eve eve;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    Moshi moshi = new Moshi.Builder().add(new AutoValueMoshiAdapterFactory()).build();
     MoshiConverter converter = MoshiConverter.create(moshi);
+    converter.map(Gist.CONVERTER_KEY, Gist.class);
     converter.map(SampleObjectOne.CONVERTER_KEY, SampleObjectOne.class);
     converter.map(SampleObjectTwo.CONVERTER_KEY, SampleObjectTwo.class);
     SqlStore sqlStore = SqlStore.create(this, converter);
@@ -202,5 +209,60 @@ public class MainActivity extends AppCompatActivity {
         store.query().keyPrefix("com").ofType(SampleObjectOne.class).values();
 
     Log.w(TAG, "Retrieved values -- " + values);
+
+    //add gists
+    try {
+      InputStream stream = getAssets().open("gists.json");
+      BufferedSource source = Okio.buffer(Okio.source(stream));
+
+      List<Gist> gists = new ArrayList<>();
+      processGists(JsonReader.of(source), gists);
+      for (Gist gist : gists) {
+        eve.store().set(Gist.KEY_PREFIX + gist.id(), gist);
+      }
+      List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).values();
+
+      Log.w(TAG, "Retrieved gist values -- size: " + gistValues.size() + " " + gistValues);
+
+      List<String> gistKeys = store.query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).keys();
+      Log.w(TAG, "Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    //add minecraft error - huge text file - experimental
+    /*try {
+      InputStream crashStream = getAssets().open("minecraft_crash.txt");
+      BufferedSource crashBuffer = Okio.buffer(Okio.source(crashStream));
+
+      eve.store().set("minecraft", crashBuffer.readByteArray());
+      ByteString byteString = ByteString.of((byte[]) eve.store().get("minecraft"));
+
+      Log.w(TAG, byteString.utf8());
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }*/
+  }
+
+  /**
+   * Process Json and create a list of gists
+   */
+  private void processGists(JsonReader reader, List<Gist> gists) throws IOException {
+
+    if (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
+      reader.beginArray();
+    } else if (reader.peek() == JsonReader.Token.BEGIN_OBJECT) {
+      Gist gist = moshi.adapter(Gist.class).fromJson(reader);
+      gists.add(gist);
+    } else if (reader.peek() == JsonReader.Token.END_OBJECT) {
+      reader.endObject();
+    } else if (reader.peek() == JsonReader.Token.END_ARRAY) {
+      reader.endArray();
+      return;
+    } else if (reader.peek() == JsonReader.Token.END_DOCUMENT) {
+      return;
+    }
+    processGists(reader, gists);
   }
 }
