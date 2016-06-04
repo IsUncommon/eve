@@ -20,6 +20,8 @@ import uncmn.eve.Value;
 public class SqlStore extends Store {
 
   BriteDatabase db;
+  String dbPath;
+  String dbName;
 
   SqlStore(Context context, Converter converter) {
     super(converter);
@@ -31,10 +33,47 @@ public class SqlStore extends Store {
 
       }
     }).wrapDatabaseHelper(openHelper, Schedulers.io());
+    this.dbPath = openHelper.getReadableDatabase().getPath();
+    this.dbName = openHelper.getDatabaseName();
   }
 
   public static SqlStore create(Context context, Converter converter) {
     return new SqlStore(context, converter);
+  }
+
+  /**
+   * Get database path.
+   */
+  public String dbPath() {
+    return dbPath;
+  }
+
+  /**
+   * Get database name.
+   */
+  public String dbName() {
+    return dbName;
+  }
+
+  /**
+   * Get number of entries in the database.
+   */
+  public int count() {
+    final String sql = "select count(*) FROM " + ValueQuery.TABLE;
+
+    Cursor cursor = db.query(sql);
+    int count = 0;
+    try {
+      if (cursor != null && cursor.getCount() > 0) {
+        cursor.moveToFirst();
+        count = cursor.getInt(0);
+      }
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
+    }
+    return count;
   }
 
   @Override public void set(String key, Value value) {

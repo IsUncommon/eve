@@ -1,3 +1,6 @@
 <resources>
   <string name="app_name">Eve</string>
+  <string name="db_name">Database Name: %s</string>
+  <string name="db_size">Database Size: %s</string>
+  <string name="db_count">Count: %s</string>
 </resources>

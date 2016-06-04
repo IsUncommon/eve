@@ -1,11 +1,14 @@
 package uncmn.eve.sample;
 
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
 import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.Moshi;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -35,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     converter.map(SampleObjectOne.CONVERTER_KEY, SampleObjectOne.class);
     converter.map(SampleObjectTwo.CONVERTER_KEY, SampleObjectTwo.class);
     SqlStore sqlStore = SqlStore.create(this, converter);
+
+    //set variables
+    setDbName(R.string.db_name, sqlStore.dbName());
+    setDbSize(R.string.db_size, new File(sqlStore.dbPath()).length() / 1000 + " kb");
+    setCount(R.string.db_count, sqlStore.count() + "");
 
     eve = Eve.builder().store(sqlStore).build();
     Store store = eve.store();
@@ -243,6 +251,8 @@ public class MainActivity extends AppCompatActivity {
     } catch (IOException e) {
       e.printStackTrace();
     }*/
+
+    setCount(R.string.db_count, sqlStore.count() + "");
   }
 
   /**
@@ -250,19 +260,44 @@ public class MainActivity extends AppCompatActivity {
    */
   private void processGists(JsonReader reader, List<Gist> gists) throws IOException {
 
-    if (reader.peek() == JsonReader.Token.BEGIN_ARRAY) {
-      reader.beginArray();
-    } else if (reader.peek() == JsonReader.Token.BEGIN_OBJECT) {
-      Gist gist = moshi.adapter(Gist.class).fromJson(reader);
-      gists.add(gist);
-    } else if (reader.peek() == JsonReader.Token.END_OBJECT) {
-      reader.endObject();
-    } else if (reader.peek() == JsonReader.Token.END_ARRAY) {
-      reader.endArray();
-      return;
-    } else if (reader.peek() == JsonReader.Token.END_DOCUMENT) {
-      return;
+    JsonReader.Token token = reader.peek();
+    switch (token) {
+      case BEGIN_ARRAY: {
+        reader.beginArray();
+        break;
+      }
+      case BEGIN_OBJECT: {
+        Gist gist = moshi.adapter(Gist.class).fromJson(reader);
+        gists.add(gist);
+        break;
+      }
+      case END_OBJECT: {
+        reader.endObject();
+        break;
+      }
+      case END_ARRAY: {
+        reader.endArray();
+        return;
+      }
+      case END_DOCUMENT: {
+        return;
+      }
+      default: {
+        //no-op
+      }
     }
     processGists(reader, gists);
+  }
+
+  private void setDbName(@StringRes int resId, String... args) {
+    ((TextView) findViewById(R.id.txt_db_name)).setText(getString(resId, args));
+  }
+
+  private void setDbSize(@StringRes int resId, String... args) {
+    ((TextView) findViewById(R.id.txt_db_size)).setText(getString(resId, args));
+  }
+
+  private void setCount(@StringRes int resId, String... args) {
+    ((TextView) findViewById(R.id.txt_count)).setText(getString(resId, args));
   }
 }
