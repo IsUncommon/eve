@@ -190,7 +190,17 @@ public class MainActivity extends AppCompatActivity {
 
     ////start query
     List<Entry<SampleObjectOne>> result =
-        store.query().keyContains("plex").run(SampleObjectOne.class);
+        store.query().keyContains("plex").ofType(SampleObjectOne.class).entries();
+
     Log.w(TAG, "Retrieved query -- " + result);
+
+    List<String> keys = store.query().keyPrefix("com").anyType().keys();
+
+    Log.w(TAG, "Retrieved keys -- " + keys);
+
+    List<SampleObjectOne> values =
+        store.query().keyPrefix("com").ofType(SampleObjectOne.class).values();
+
+    Log.w(TAG, "Retrieved values -- " + values);
   }
 }

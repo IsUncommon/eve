@@ -1,5 +1,6 @@
 package uncmn.eve;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -7,80 +8,202 @@ import java.util.List;
  */
 public class Query {
 
-  final Store store;
+  static final int KEY_PREFIX = 1;
+  static final int KEY_CONTAINS = 2;
 
-  public Query(Store store) {
+  final Store store;
+  String littleKey = null;
+  int littleKeyType = -1;
+
+  Query(Store store) {
     this.store = store;
   }
 
-  @SuppressWarnings("unchecked") public Query keyPrefix(String prefix) {
-    return KeyPrefixQueryRunner.create(store, prefix);
-  }
-
-  @SuppressWarnings("unchecked") public Query keyContains(String contains) {
-    return KeyContainsQueryRunner.create(store, contains);
-  }
-
-  protected void validate() {
-    //
+  /**
+   * Find list of values with a key prefix.
+   */
+  public OfType keyPrefix(String prefix) {
+    this.littleKeyType = KEY_PREFIX;
+    this.littleKey = prefix;
+    return OfType.create(this);
   }
 
   /**
-   * @param clazz clazz instance.
-   * @param <T> Type parameter. Type cannot be a collection type like List/Map etc or Generic type.
+   * Find list of values whose keys contain.
    */
-  public <T> List<Entry<T>> run(Class<T> clazz) {
-    return store.query(clazz);
+  public OfType keyContains(String contains) {
+    this.littleKeyType = KEY_CONTAINS;
+    this.littleKey = contains;
+    return OfType.create(this);
   }
 
-  static class KeyPrefixQueryRunner extends Query {
-    String keyPrefix;
+  private boolean valid() {
+    return littleKeyType > -1 || littleKey != null;
+  }
 
-    public KeyPrefixQueryRunner(Store store) {
-      super(store);
+  private boolean forPrefix() {
+    return littleKeyType == KEY_PREFIX;
+  }
+
+  private boolean forContains() {
+    return littleKeyType == KEY_CONTAINS;
+  }
+
+  public static class OfType {
+
+    Query query;
+
+    private OfType(Query query) {
+      this.query = query;
     }
 
-    static KeyPrefixQueryRunner create(Store store, String keyPrefix) {
-      KeyPrefixQueryRunner queryRunner = new KeyPrefixQueryRunner(store);
-      queryRunner.keyPrefix = keyPrefix;
-      return queryRunner;
+    static OfType create(Query query) {
+      return new OfType(query);
     }
 
-    @Override protected void validate() {
-      if (keyPrefix == null || keyPrefix.length() == 0) {
+    /**
+     * @param cls class instance.
+     * @param <T> Type parameter. Type cannot be a collection type like List/Map etc or Generic
+     * type.
+     */
+    public <T> QueryRunner<T> ofType(final Class<T> cls) {
+      if (query.forContains()) {
+        return KeyContainsQueryRunner.create(query, cls);
+      } else if (query.forPrefix()) {
+        return KeyPrefixQueryRunner.create(query, cls);
+      }
+      return anyType();
+    }
+
+    /**
+     * fetch list of any type values/keys/entries
+     */
+    public <R> QueryRunner<R> anyType() {
+      return AnyTypeQueryRunner.create(query, null);
+    }
+  }
+
+  public static abstract class QueryRunner<T> {
+
+    Query query;
+    Class<T> cls;
+
+    QueryRunner(Query query, Class<T> cls) {
+      this.query = query;
+      this.cls = cls;
+    }
+
+    protected abstract boolean validate();
+
+    /**
+     * Execute query in store and get a list of entries.
+     */
+    public abstract List<Entry<T>> entries();
+
+    /**
+     * Get list of keys.
+     */
+    public abstract List<String> keys();
+
+    /**
+     * Get list of values
+     */
+    public abstract List<T> values();
+  }
+
+  private static class AnyTypeQueryRunner<T> extends QueryRunner<T> {
+
+    AnyTypeQueryRunner(Query query, Class<T> cls) {
+      super(query, cls);
+    }
+
+    static <R> AnyTypeQueryRunner<R> create(Query query, Class<R> cls) {
+      return new AnyTypeQueryRunner<>(query, null);
+    }
+
+    @Override protected boolean validate() {
+      return false;
+    }
+
+    @Override public List<Entry<T>> entries() {
+      System.out.println("Need type for entries.");
+      return Collections.emptyList();
+    }
+
+    @Override public List<String> keys() {
+      if (query.forPrefix()) {
+        return query.store.keysPrefixAny(query.littleKey);
+      } else {
+        return query.store.keysContainsAny(query.littleKey);
+      }
+    }
+
+    @SuppressWarnings("unchecked") @Override public List<T> values() {
+      if (query.forPrefix()) {
+        return (List<T>) query.store.valuesPrefixAny(query.littleKey);
+      } else {
+        return (List<T>) query.store.valuesContainsAny(query.littleKey);
+      }
+    }
+  }
+
+  private static class KeyPrefixQueryRunner<T> extends QueryRunner<T> {
+
+    private KeyPrefixQueryRunner(Query query, Class<T> cls) {
+      super(query, cls);
+    }
+
+    static <T> KeyPrefixQueryRunner<T> create(Query query, Class<T> cls) {
+      return new KeyPrefixQueryRunner<>(query, cls);
+    }
+
+    @Override protected boolean validate() {
+      if (!query.valid()) {
         throw new RuntimeException("Key prefix cannot be empty");
       }
+      return true;
     }
 
-    @Override @SuppressWarnings("unchecked") public <T> List<Entry<T>> run(Class<T> clazz) {
-      validate();
-      return store.queryKeyPrefix(clazz, keyPrefix);
+    @Override public List<Entry<T>> entries() {
+      return query.store.entriesKeyPrefix(cls, query.littleKey);
+    }
+
+    @Override public List<String> keys() {
+      return query.store.keysPrefix(cls, query.littleKey);
+    }
+
+    @Override public List<T> values() {
+      return query.store.valuesPrefix(cls, query.littleKey);
     }
   }
 
-  static class KeyContainsQueryRunner extends Query {
-    String keyContains;
+  private static class KeyContainsQueryRunner<T> extends QueryRunner<T> {
 
-    KeyContainsQueryRunner(Store store) {
-      super(store);
+    private KeyContainsQueryRunner(Query query, Class<T> cls) {
+      super(query, cls);
     }
 
-    static KeyContainsQueryRunner create(Store store, String keyContains) {
-      KeyContainsQueryRunner queryRunner = new KeyContainsQueryRunner(store);
-      queryRunner.keyContains = keyContains;
-      return queryRunner;
+    static <T> KeyContainsQueryRunner<T> create(Query query, Class<T> cls) {
+      return new KeyContainsQueryRunner<>(query, cls);
     }
 
-    @Override protected void validate() {
-      super.validate();
-      if (keyContains == null || keyContains.length() == 0) {
-        throw new RuntimeException("Key contains cannot be empty");
+    @Override protected boolean validate() {
+      if (!query.valid()) {
+        throw new RuntimeException("Key Contains cannot be empty");
       }
+      return true;
     }
 
-    @Override @SuppressWarnings("unchecked") public <T> List<Entry<T>> run(Class<T> clazz) {
-      validate();
-      return store.queryKeyContains(clazz, keyContains);
+    @Override public List<Entry<T>> entries() {
+      return query.store.entriesKeyContains(cls, query.littleKey);
+    }
+
+    @Override public List<String> keys() {
+      return query.store.keysContains(cls, query.littleKey);
+    }
+
+    @Override public List<T> values() {
+      return query.store.valuesContains(cls, query.littleKey);
     }
   }
 }

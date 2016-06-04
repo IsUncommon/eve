@@ -6,8 +6,8 @@ package uncmn.eve;
  * @param <T> value type T.
  */
 public class Entry<T> {
-  String key;
-  T value;
+  private String key;
+  private T value;
 
   private Entry() {
 
@@ -28,7 +28,21 @@ public class Entry<T> {
     return entry;
   }
 
+  /**
+   * Key
+   */
+  public String key() {
+    return key;
+  }
+
+  /**
+   * Value
+   */
+  public T value() {
+    return value;
+  }
+
   @Override public String toString() {
-    return "Entry{" + "key='" + key + '\'' + ", value=" + value + '}';
+    return "Entry{" + "key='" + key() + '\'' + ", value=" + value() + '}';
   }
 }

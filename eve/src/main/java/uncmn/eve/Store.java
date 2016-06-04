@@ -2,6 +2,7 @@ package uncmn.eve;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Store implements Operations {
@@ -337,25 +338,25 @@ public abstract class Store implements Operations {
    */
   public abstract boolean exists(String key);
 
-  <T> List<Entry<T>> queryKeyPrefix(Class<T> clazz, String keyPrefix) {
+  <T> List<Entry<T>> entriesKeyPrefix(Class<T> clazz, String keyPrefix) {
     String converterKey = eveConverter.mapping(clazz);
     if (converterKey == null) {
       converterKey = converter.mapping(clazz);
     }
-    return queryKeyPrefix(converterKey, keyPrefix);
+    return entriesKeyPrefix(converterKey, keyPrefix);
   }
 
-  protected abstract <T> List<Entry<T>> queryKeyPrefix(String converterKey, String keyPrefix);
+  protected abstract <T> List<Entry<T>> entriesKeyPrefix(String converterKey, String keyPrefix);
 
-  <T> List<Entry<T>> queryKeyContains(Class<T> clazz, String keyContains) {
+  <T> List<Entry<T>> entriesKeyContains(Class<T> clazz, String keyContains) {
     String converterKey = eveConverter.mapping(clazz);
     if (converterKey == null) {
       converterKey = converter.mapping(clazz);
     }
-    return queryKeyContains(converterKey, keyContains);
+    return entriesKeyContains(converterKey, keyContains);
   }
 
-  protected abstract <T> List<Entry<T>> queryKeyContains(String converterKey, String keyContains);
+  protected abstract <T> List<Entry<T>> entriesKeyContains(String converterKey, String keyContains);
 
   @Override public Query query() {
     return new Query(this);
@@ -366,8 +367,68 @@ public abstract class Store implements Operations {
     if (converterKey == null) {
       converterKey = converter.mapping(clazz);
     }
-    return query(converterKey);
+    return entries(converterKey);
   }
 
-  protected abstract <T> List<Entry<T>> query(String converterKey);
+  protected abstract <T> List<Entry<T>> entries(String converterKey);
+
+  protected abstract List<String> keysPrefixAny(String keyPrefix);
+
+  protected abstract List<String> keysContainsAny(String keyContains);
+
+  <T> List<String> keysPrefix(Class<T> clazz, String keyPrefix) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    String converterKey = eveConverter.mapping(clazz);
+    if (converterKey == null) {
+      converterKey = converter.mapping(clazz);
+    }
+    return keysPrefix(converterKey, keyPrefix);
+  }
+
+  protected abstract List<String> keysPrefix(String converterKey, String keyPrefix);
+
+  <T> List<String> keysContains(Class<T> clazz, String keyContains) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    String converterKey = eveConverter.mapping(clazz);
+    if (converterKey == null) {
+      converterKey = converter.mapping(clazz);
+    }
+    return keysContains(converterKey, keyContains);
+  }
+
+  protected abstract List<String> keysContains(String converterKey, String keyContains);
+
+  protected abstract List<Object> valuesPrefixAny(String keyPrefix);
+
+  protected abstract List<Object> valuesContainsAny(String keyContains);
+
+  <T> List<T> valuesPrefix(Class<T> clazz, String keyPrefix) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    String converterKey = eveConverter.mapping(clazz);
+    if (converterKey == null) {
+      converterKey = converter.mapping(clazz);
+    }
+    return valuesPrefix(converterKey, keyPrefix);
+  }
+
+  protected abstract <T> List<T> valuesPrefix(String converterKey, String keyPrefix);
+
+  <T> List<T> valuesContains(Class<T> clazz, String keyContains) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    String converterKey = eveConverter.mapping(clazz);
+    if (converterKey == null) {
+      converterKey = converter.mapping(clazz);
+    }
+    return valuesContains(converterKey, keyContains);
+  }
+
+  protected abstract <T> List<T> valuesContains(String converterKey, String keyContains);
 }
