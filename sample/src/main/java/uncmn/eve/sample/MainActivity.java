@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   /**
-   * Process Json and create a list of gists
+   * Process Json and create a list of gists.
    */
   private void processGists(JsonReader reader, List<Gist> gists) throws IOException {
 

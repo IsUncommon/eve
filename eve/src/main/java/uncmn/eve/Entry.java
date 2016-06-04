@@ -29,14 +29,14 @@ public class Entry<T> {
   }
 
   /**
-   * Key
+   * Key.
    */
   public String key() {
     return key;
   }
 
   /**
-   * Value
+   * Value.
    */
   public T value() {
     return value;

@@ -63,7 +63,7 @@ public class Query {
 
     /**
      * @param cls class instance.
-     * @param <T> Type parameter. Type cannot be a collection type like List/Map etc or Generic
+     * @param <T> Type parameter. Type cannot be a collection type like List/Map etc or Generic.
      * type.
      */
     public <T> QueryRunner<T> ofType(final Class<T> cls) {
@@ -76,14 +76,14 @@ public class Query {
     }
 
     /**
-     * fetch list of any type values/keys/entries
+     * Fetch list of any type values/keys/entries.
      */
     public <R> QueryRunner<R> anyType() {
       return AnyTypeQueryRunner.create(query, null);
     }
   }
 
-  public static abstract class QueryRunner<T> {
+  public abstract static class QueryRunner<T> {
 
     Query query;
     Class<T> cls;
@@ -106,7 +106,7 @@ public class Query {
     public abstract List<String> keys();
 
     /**
-     * Get list of values
+     * Get list of values.
      */
     public abstract List<T> values();
   }
