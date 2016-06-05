@@ -10,6 +10,7 @@ public class Query {
 
   static final int KEY_PREFIX = 1;
   static final int KEY_CONTAINS = 2;
+  static final int CLASS_TYPE = 3;
 
   final Store store;
   String littleKey = null;
@@ -35,6 +36,13 @@ public class Query {
     this.littleKeyType = KEY_CONTAINS;
     this.littleKey = contains;
     return OfType.create(this);
+  }
+
+  /**
+   * Query objects of type.
+   */
+  public <T> QueryRunner<T> type(Class<T> cls) {
+    return TypeQueryRunner.create(this, cls);
   }
 
   private boolean valid() {
@@ -66,7 +74,7 @@ public class Query {
      * @param <T> Type parameter. Type cannot be a collection type like List/Map etc or Generic.
      * type.
      */
-    public <T> QueryRunner<T> ofType(final Class<T> cls) {
+    public <T> QueryRunner<T> type(final Class<T> cls) {
       if (query.forContains()) {
         return KeyContainsQueryRunner.create(query, cls);
       } else if (query.forPrefix()) {
@@ -111,6 +119,33 @@ public class Query {
     public abstract List<T> values();
   }
 
+  private static class TypeQueryRunner<T> extends QueryRunner<T> {
+
+    TypeQueryRunner(Query query, Class<T> cls) {
+      super(query, cls);
+    }
+
+    public static <T> TypeQueryRunner<T> create(Query query, Class<T> cls) {
+      return new TypeQueryRunner<>(query, cls);
+    }
+
+    @Override protected boolean validate() {
+      return cls != null;
+    }
+
+    @Override public List<Entry<T>> entries() {
+      return query.store.entries(cls);
+    }
+
+    @Override public List<String> keys() {
+      return query.store.keysType(cls);
+    }
+
+    @Override public List<T> values() {
+      return query.store.valuesType(cls);
+    }
+  }
+
   private static class AnyTypeQueryRunner<T> extends QueryRunner<T> {
 
     AnyTypeQueryRunner(Query query, Class<T> cls) {
@@ -122,7 +157,7 @@ public class Query {
     }
 
     @Override protected boolean validate() {
-      return false;
+      return query.valid();
     }
 
     @Override public List<Entry<T>> entries() {
