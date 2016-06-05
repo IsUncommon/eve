@@ -27,4 +27,9 @@ public interface Converter {
    * @return Converter key of a given class. Null if cannot be determined.
    */
   String mapping(Class<?> clazz);
+
+  /**
+   * @return return the type for a given converter key.
+   */
+  Class mapType(String converterKey);
 }

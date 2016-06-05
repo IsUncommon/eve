@@ -107,6 +107,10 @@ public class EveConverter implements Converter {
     return backward.get(clazz);
   }
 
+  @Override public Class mapType(String converterKey) {
+    return forward.get(converterKey);
+  }
+
   /**
    * @param converterKey converter key for which eve converter is supported.
    * @return true if eve converter supports this object conversion, false otherwise.

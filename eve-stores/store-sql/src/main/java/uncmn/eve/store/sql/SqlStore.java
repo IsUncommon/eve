@@ -98,6 +98,26 @@ public class SqlStore extends Store {
     }
   }
 
+  @Override public Class type(String key) {
+    ValueQuery query = ValueQuery.queryBuilder().key(key);
+
+    final String sql = query.sql();
+    final String[] args = query.args();
+    String type = null;
+    Cursor cursor = db.query(sql, args);
+    try {
+      if (cursor != null && cursor.getCount() > 0) {
+        cursor.moveToFirst();
+        type = cursor.getString(cursor.getColumnIndexOrThrow(ValueQuery.TYPE));
+      }
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
+    }
+    return converterType(type);
+  }
+
   @Override @SuppressWarnings("unchecked") public <T> T get(String key) {
     ValueQuery query = ValueQuery.queryBuilder().key(key);
     final String sql = query.sql();
