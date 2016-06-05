@@ -122,6 +122,11 @@ public interface Operations {
   <T> T get(String key);
 
   /**
+   * Clear all data. return number of keys deleted.
+   */
+  int clear();
+
+  /**
    * A generic query.
    *
    * @return {@linkplain Query} instance.
