@@ -227,20 +227,6 @@ public class MainActivity extends AppCompatActivity {
 
     Log.w(TAG, "Retrieved values -- " + values);
 
-    //add minecraft error - huge text file - experimental
-    /*try {
-      InputStream crashStream = getAssets().open("minecraft_crash.txt");
-      BufferedSource crashBuffer = Okio.buffer(Okio.source(crashStream));
-
-      eve.store().set("minecraft", crashBuffer.readByteArray());
-      ByteString byteString = ByteString.of((byte[]) eve.store().get("minecraft"));
-
-      Log.w(TAG, byteString.utf8());
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }*/
-
     showStoreDetails(sqlStore);
   }
 
@@ -257,11 +243,13 @@ public class MainActivity extends AppCompatActivity {
         eve.store().set(Gist.KEY_PREFIX + gist.id() + suffix, gist);
       }
 
-      List<Gist> gistValues = eve.store().query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).values();
+      List<Gist> gistValues =
+          eve.store().query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).values();
 
       Log.w(TAG, "Retrieved gist values -- size: " + gistValues.size() + " " + gistValues);
 
-      List<String> gistKeys = eve.store().query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).keys();
+      List<String> gistKeys =
+          eve.store().query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).keys();
       Log.w(TAG, "Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
     } catch (IOException e) {
       e.printStackTrace();
