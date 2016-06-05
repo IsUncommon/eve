@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     MoshiConverter converter = MoshiConverter.create(moshi);
+    //Unique converter keys should be mapped and never changed since it is persisted.
     converter.map(Gist.CONVERTER_KEY, Gist.class);
     converter.map(SampleObjectOne.CONVERTER_KEY, SampleObjectOne.class);
     converter.map(SampleObjectTwo.CONVERTER_KEY, SampleObjectTwo.class);
@@ -205,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
 
     ////start query
     List<Entry<SampleObjectOne>> result =
-        store.query().keyContains("plex").ofType(SampleObjectOne.class).entries();
+        store.query().keyContains("plex").type(SampleObjectOne.class).entries();
 
     Log.w(TAG, "Retrieved query -- " + result);
 
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
     Log.w(TAG, "Retrieved keys -- " + keys);
 
     List<SampleObjectOne> values =
-        store.query().keyPrefix("com").ofType(SampleObjectOne.class).values();
+        store.query().keyPrefix("com").type(SampleObjectOne.class).values();
 
     Log.w(TAG, "Retrieved values -- " + values);
 
@@ -228,15 +229,19 @@ public class MainActivity extends AppCompatActivity {
       for (Gist gist : gists) {
         eve.store().set(Gist.KEY_PREFIX + gist.id(), gist);
       }
-      List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).values();
+      List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).values();
 
       Log.w(TAG, "Retrieved gist values -- size: " + gistValues.size() + " " + gistValues);
 
-      List<String> gistKeys = store.query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).keys();
+      List<String> gistKeys = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).keys();
       Log.w(TAG, "Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    List<String> gistKeys = store.query().type(Gist.class).keys();
+
+    Log.w(TAG, "Retrieved gist keys of type -- size: " + gistKeys.size() + " " + gistKeys);
 
     //add minecraft error - huge text file - experimental
     /*try {
