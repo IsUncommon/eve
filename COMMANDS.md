@@ -109,7 +109,7 @@ Get list of ENTRIES for key contains and Class type.
 ```java 
 
   query()
-    .keyContains(String prefix)
+    .keyContains(String contains)
     .ofType(Class cls)
     .entries();
 
@@ -120,7 +120,7 @@ Get list of KEYS for key contains and class type.
 ```java 
 
   query()
-    .keyContains(String prefix)
+    .keyContains(String contains)
     .ofType(Class cls)
     .keys();
 
@@ -131,7 +131,7 @@ Get list of VALUES for key contains and class type.
 ```java 
 
   query()
-    .keyContains(String prefix)
+    .keyContains(String contains)
     .ofType(Class cls)
     .values();
 
@@ -142,7 +142,7 @@ Get list of VALUES for key contains and class type.
 ```java 
 
   query()
-    .keyContains(String prefix)
+    .keyContains(String contains)
     .anyType()
     .entries();
 
