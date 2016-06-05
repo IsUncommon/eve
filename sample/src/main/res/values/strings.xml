@@ -3,5 +3,6 @@
   <string name="db_name">Database Name: %s</string>
   <string name="db_size">Database Size: %s</string>
   <string name="db_count">Count: %s</string>
-  <string name="_100">100</string>
+  <string name="_100_gists">100 gist</string>
+  <string name="clear">clear</string>
 </resources>

@@ -1,9 +1,11 @@
 package uncmn.eve.sample;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
 import com.squareup.moshi.JsonReader;
@@ -41,10 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
     //set variables
     setDbName(R.string.db_name, sqlStore.dbName());
-    setDbSize(R.string.db_size, new File(sqlStore.dbPath()).length() / 1000 + " kb");
-    setCount(R.string.db_count, sqlStore.count() + "");
+    showStoreDetails(sqlStore);
 
     eve = Eve.builder().store(sqlStore).build();
+
+    //set click listeners
+    setClickListeners();
+
     Store store = eve.store();
 
     ////Add Primitives
@@ -218,26 +223,6 @@ public class MainActivity extends AppCompatActivity {
 
     Log.w(TAG, "Retrieved values -- " + values);
 
-    //add gists
-    try {
-      InputStream stream = getAssets().open("gists.json");
-      BufferedSource source = Okio.buffer(Okio.source(stream));
-
-      List<Gist> gists = new ArrayList<>();
-      processGists(JsonReader.of(source), gists);
-      for (Gist gist : gists) {
-        eve.store().set(Gist.KEY_PREFIX + gist.id(), gist);
-      }
-      List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).values();
-
-      Log.w(TAG, "Retrieved gist values -- size: " + gistValues.size() + " " + gistValues);
-
-      List<String> gistKeys = store.query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).keys();
-      Log.w(TAG, "Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
     //add minecraft error - huge text file - experimental
     /*try {
       InputStream crashStream = getAssets().open("minecraft_crash.txt");
@@ -252,7 +237,32 @@ public class MainActivity extends AppCompatActivity {
       e.printStackTrace();
     }*/
 
-    setCount(R.string.db_count, sqlStore.count() + "");
+    showStoreDetails(sqlStore);
+  }
+
+  private void add100Gists() {
+
+    try {
+      InputStream stream = getAssets().open("gists.json");
+      BufferedSource source = Okio.buffer(Okio.source(stream));
+
+      List<Gist> gists = new ArrayList<>();
+      processGists(JsonReader.of(source), gists);
+      for (Gist gist : gists) {
+        long suffix = SystemClock.currentThreadTimeMillis();
+        eve.store().set(Gist.KEY_PREFIX + gist.id() + suffix, gist);
+      }
+      List<Gist> gistValues =
+          eve.store().query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).values();
+
+      Log.w(TAG, "Retrieved gist values -- size: " + gistValues.size() + " " + gistValues);
+
+      List<String> gistKeys =
+          eve.store().query().keyPrefix(Gist.KEY_PREFIX).ofType(Gist.class).keys();
+      Log.w(TAG, "Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -289,6 +299,27 @@ public class MainActivity extends AppCompatActivity {
     processGists(reader, gists);
   }
 
+  private void showStoreDetails(SqlStore store) {
+    setDbSize(R.string.db_size, new File(store.dbPath()).length() / 1000 + " kb");
+    setCount(R.string.db_count, store.count() + "");
+  }
+
+  private void setClickListeners() {
+    findViewById(R.id.btn_add).setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        add100Gists();
+        showStoreDetails((SqlStore) eve.store());
+      }
+    });
+
+    findViewById(R.id.btn_clear).setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        Log.d(TAG, "onClick: Clear: " + eve.store().clear());
+        showStoreDetails((SqlStore) eve.store());
+      }
+    });
+  }
+
   private void setDbName(@StringRes int resId, String... args) {
     ((TextView) findViewById(R.id.txt_db_name)).setText(getString(resId, args));
   }
@@ -302,7 +333,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Override protected void onDestroy() {
-    Log.d(TAG, "onDestroy: " + eve.store().clear());
     super.onDestroy();
   }
 }
