@@ -58,7 +58,7 @@ Get is based on the return type of the variable.
 
 #### Query store based on KEY prefix and CLASS type.
 
-Get list of ENTRIES for key prefix and Class type.
+###### Get list of ENTRIES for key prefix and Class type.
 
 ```java 
 
@@ -69,7 +69,7 @@ Get list of ENTRIES for key prefix and Class type.
 
 ```
 
-Get list of KEYS for key prefix and class type.
+###### Get list of KEYS for key prefix and class type.
 
 ```java 
 
@@ -80,7 +80,7 @@ Get list of KEYS for key prefix and class type.
 
 ```
 
-Get list of VALUES for key prefix and class type.
+###### Get list of VALUES for key prefix and class type.
 
 ```java 
 
@@ -91,7 +91,7 @@ Get list of VALUES for key prefix and class type.
 
 ```
 
-#### Get list of ENTRIES for key prefix and ANY class type.
+###### Get list of ENTRIES for key prefix and ANY class type.
 
 ```java 
 
@@ -104,7 +104,7 @@ Get list of VALUES for key prefix and class type.
 
 #### Query store based on KEY contains and CLASS type.
 
-Get list of ENTRIES for key contains and Class type.
+###### Get list of ENTRIES for key contains and Class type.
 
 ```java 
 
@@ -115,7 +115,7 @@ Get list of ENTRIES for key contains and Class type.
 
 ```
 
-Get list of KEYS for key contains and class type.
+###### Get list of KEYS for key contains and class type.
 
 ```java 
 
@@ -126,7 +126,7 @@ Get list of KEYS for key contains and class type.
 
 ```
 
-Get list of VALUES for key contains and class type.
+###### Get list of VALUES for key contains and class type.
 
 ```java 
 
@@ -137,7 +137,7 @@ Get list of VALUES for key contains and class type.
 
 ```
 
-#### Get list of ENTRIES for key contains and ANY class type.
+###### Get list of ENTRIES for key contains and ANY class type.
 
 ```java 
 
@@ -148,12 +148,24 @@ Get list of VALUES for key contains and class type.
 
 ```
 
-#### Get list of KEYS for type.
+#### Query store based on CLASS type.
+
+###### Get list of KEYS for type.
 
 ```java
 
   query()
     .type(Class type)
     .keys();
+
+```
+
+###### Get list of VALUES for type.
+
+```java
+
+  query()
+    .type(Class type)
+    .values();
 
 ```
