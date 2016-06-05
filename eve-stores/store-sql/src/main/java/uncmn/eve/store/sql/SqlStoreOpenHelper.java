@@ -21,6 +21,7 @@ public class SqlStoreOpenHelper extends SQLiteOpenHelper {
       db.beginTransaction();
       db.execSQL(ValueQuery.CREATE_TABLE);
       db.execSQL(ValueQuery.CREATE_INDEX_TYPE);
+      db.execSQL(ValueQuery.CREATE_INDEX_TYPE_KEY);
       db.setTransactionSuccessful();
     } catch (Exception ex) {
       ex.printStackTrace();

@@ -2,6 +2,7 @@ package uncmn.eve;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Store implements Operations {
@@ -172,6 +173,19 @@ public abstract class Store implements Operations {
   }
 
   /**
+   * Store {@link byte} array
+   *
+   * @param key is a {@link String}, NotNull and Unique
+   * @param value byte array.
+   */
+  @Override public void set(String key, byte[] value) {
+    String type = eveConverter.mapping(value);
+    synchronized (storeLock) {
+      set(key, value(value, type));
+    }
+  }
+
+  /**
    * Store {@link String}.
    *
    * @param key is a {@link String}, NotNull and Unique
@@ -244,9 +258,9 @@ public abstract class Store implements Operations {
         }
         ByteBuffer byteBuffer = ByteBuffer.allocate(totalSize);
         byteBuffer.putInt(value.size());
-        for (int i = 0; i < objectBytes.length; i++) {
-          byteBuffer.putInt(objectBytes[i].length);
-          byteBuffer.put(objectBytes[i]);
+        for (byte[] objectByte : objectBytes) {
+          byteBuffer.putInt(objectByte.length);
+          byteBuffer.put(objectByte);
         }
         String listKey = LIST_KEY_PREFIX + converterKey;
         set(key, value(byteBuffer.array(), listKey));
@@ -322,15 +336,6 @@ public abstract class Store implements Operations {
   }
 
   /**
-   * Get value for key from store.
-   *
-   * @param key is a {@link String}, NotNull and Unique
-   * @param <T> generic return type
-   * @return generic return type
-   */
-  public abstract <T> T get(String key);
-
-  /**
    * Delete key.
    *
    * @param key is a {@link String}, NotNull and Unique
@@ -345,4 +350,106 @@ public abstract class Store implements Operations {
    * @return true if key exists false otherwise
    */
   public abstract boolean exists(String key);
+
+  /**
+   * Query with key/type.
+   */
+  @Override public Query query() {
+    return new Query(this);
+  }
+
+  /**
+   * Map Class Type to converter key.
+   */
+  private String converterKey(Class cls) {
+    String converterKey = eveConverter.mapping(cls);
+    if (converterKey == null) {
+      converterKey = converter.mapping(cls);
+    }
+    if (converterKey == null) {
+      System.out.println("Invalid converter key");
+    }
+    return converterKey;
+  }
+
+  /**
+   * Map the converter key to class.
+   */
+  protected Class converterType(String converterKey) {
+    return converter.mapType(converterKey);
+  }
+
+  protected abstract <T> List<Entry<T>> entries(String converterKey);
+
+  protected abstract <T> List<Entry<T>> entriesKeyPrefix(String converterKey, String keyPrefix);
+
+  protected abstract <T> List<Entry<T>> entriesKeyContains(String converterKey, String keyContains);
+
+  <T> List<Entry<T>> entriesTypeInternal(Class<T> clazz) {
+    return entries(converterKey(clazz));
+  }
+
+  <T> List<Entry<T>> entriesKeyPrefixInternal(Class<T> clazz, String keyPrefix) {
+    return entriesKeyPrefix(converterKey(clazz), keyPrefix);
+  }
+
+  <T> List<Entry<T>> entriesKeyContainsInternal(Class<T> clazz, String keyContains) {
+    return entriesKeyContains(converterKey(clazz), keyContains);
+  }
+
+  protected abstract List<String> keysType(String convertKey);
+
+  protected abstract List<String> keysPrefixAny(String keyPrefix);
+
+  protected abstract List<String> keysContainsAny(String keyContains);
+
+  protected abstract List<String> keysPrefix(String converterKey, String keyPrefix);
+
+  protected abstract List<String> keysContains(String converterKey, String keyContains);
+
+  <T> List<String> keysTypeInternal(Class<T> cls) {
+    return keysType(converterKey(cls));
+  }
+
+  <T> List<String> keysPrefixInternal(Class<T> clazz, String keyPrefix) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    return keysPrefix(converterKey(clazz), keyPrefix);
+  }
+
+  <T> List<String> keysContainsInternal(Class<T> clazz, String keyContains) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    return keysContains(converterKey(clazz), keyContains);
+  }
+
+  protected abstract <T> List<T> valuesType(String converterKey);
+
+  protected abstract List<Object> valuesPrefixAny(String keyPrefix);
+
+  protected abstract List<Object> valuesContainsAny(String keyContains);
+
+  protected abstract <T> List<T> valuesPrefix(String converterKey, String keyPrefix);
+
+  protected abstract <T> List<T> valuesContains(String converterKey, String keyContains);
+
+  <T> List<T> valuesTypeInternal(Class<T> cls) {
+    return valuesType(converterKey(cls));
+  }
+
+  <T> List<T> valuesPrefixInternal(Class<T> clazz, String keyPrefix) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    return valuesPrefix(converterKey(clazz), keyPrefix);
+  }
+
+  <T> List<T> valuesContainsInternal(Class<T> clazz, String keyContains) {
+    if (clazz == null) {
+      return Collections.emptyList();
+    }
+    return valuesContains(converterKey(clazz), keyContains);
+  }
 }

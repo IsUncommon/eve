@@ -1,32 +1,52 @@
 package uncmn.eve.sample;
 
 import android.os.Bundle;
+import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
+import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import okio.BufferedSource;
+import okio.Okio;
+import uncmn.eve.Entry;
 import uncmn.eve.Eve;
 import uncmn.eve.Store;
 import uncmn.eve.converter.moshi.MoshiConverter;
+import uncmn.eve.sample.gist.Gist;
 import uncmn.eve.store.sql.SqlStore;
 
 public class MainActivity extends AppCompatActivity {
 
   private static final String TAG = MainActivity.class.getSimpleName();
+  Moshi moshi = new Moshi.Builder().add(new AutoValueMoshiAdapterFactory()).build();
   Eve eve;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    Moshi moshi = new Moshi.Builder().add(new AutoValueMoshiAdapterFactory()).build();
     MoshiConverter converter = MoshiConverter.create(moshi);
+    //Unique converter keys should be mapped and never changed since it is persisted.
+    converter.map(Gist.CONVERTER_KEY, Gist.class);
     converter.map(SampleObjectOne.CONVERTER_KEY, SampleObjectOne.class);
     converter.map(SampleObjectTwo.CONVERTER_KEY, SampleObjectTwo.class);
     SqlStore sqlStore = SqlStore.create(this, converter);
+
+    //set variables
+    setDbName(R.string.db_name, sqlStore.dbName());
+    setDbSize(R.string.db_size, new File(sqlStore.dbPath()).length() / 1000 + " kb");
+    setCount(R.string.db_count, sqlStore.count() + "");
 
     eve = Eve.builder().store(sqlStore).build();
     Store store = eve.store();
@@ -155,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
     Log.d(TAG, "Is sample same ? " + sample3.equals(retSample3));
     Log.d(TAG, "Sample object is -- " + retSample3);
 
+    //get key type
+    Log.d(TAG, "onCreate: Key type: " + eve.store().type(sampleKey3).getSimpleName());
+
     ////End Objects
 
     ////Start collections.
@@ -186,5 +209,90 @@ public class MainActivity extends AppCompatActivity {
     Log.d(TAG, "Retrieved object list is -- " + sampleObjectTwoArrayList);
 
     ////End collections.
+
+    ////start query
+    List<Entry<SampleObjectOne>> result =
+        store.query().keyContains("plex").type(SampleObjectOne.class).entries();
+
+    Log.w(TAG, "Retrieved query -- " + result);
+
+    List<String> keys = store.query().keyPrefix("com").anyType().keys();
+
+    Log.w(TAG, "Retrieved keys -- " + keys);
+
+    List<SampleObjectOne> values =
+        store.query().keyPrefix("com").type(SampleObjectOne.class).values();
+
+    Log.w(TAG, "Retrieved values -- " + values);
+
+    //add gists
+
+    List<Gist> gists = processGists();
+
+    for (Gist gist : gists) {
+      eve.store().set(Gist.KEY_PREFIX + gist.id(), gist);
+    }
+    Log.d(TAG, "Gists sizes -- " + gists.size());
+
+    List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).values();
+    Log.w(TAG, "Prefix: Retrieved gist values -- size: " + gistValues.size());
+    same = (gists.size() == gistValues.size());
+    Log.d(TAG, "Prefix: Are sizes same -- " + same);
+
+    Log.d(TAG, "Gists sizes -- " + gists.size());
+    gistValues = store.query().keyContains("ist-").type(Gist.class).values();
+    Log.w(TAG, "Contains: Retrieved gist values -- size: " + gistValues.size());
+    same = (gists.size() == gistValues.size());
+    Log.d(TAG, "Contains: Are sizes same -- " + same);
+
+    List<String> gistKeys = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).keys();
+    Log.w(TAG, "Prefix: Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
+    same = gists.size() == gistKeys.size();
+    Log.d(TAG, "Are sizes same -- " + same);
+
+    gistKeys = store.query().type(Gist.class).keys();
+    Log.w(TAG, "All: Retrieved gist keys of type -- size: " + gistKeys.size() + " " + gistKeys);
+    same = gists.size() == gistKeys.size();
+    Log.d(TAG, "Are sizes same -- " + same);
+
+    setCount(R.string.db_count, sqlStore.count() + "");
+  }
+
+  private List<Gist> processGists() {
+    List<Gist> list = new ArrayList<>();
+    try {
+      InputStream stream = getAssets().open("gists.json");
+      BufferedSource source = Okio.buffer(Okio.source(stream));
+
+      Type listMyData = Types.newParameterizedType(List.class, Gist.class);
+      JsonAdapter<List<Gist>> adapter = moshi.adapter(listMyData);
+      List<Gist> gists = adapter.fromJson(source);
+      //process unique gists
+      HashMap<String, Gist> map = new HashMap<>();
+      for (Gist gist : gists) {
+        map.put(gist.id(), gist);
+      }
+      list.addAll(map.values());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return list;
+  }
+
+  private void setDbName(@StringRes int resId, String... args) {
+    ((TextView) findViewById(R.id.txt_db_name)).setText(getString(resId, args));
+  }
+
+  private void setDbSize(@StringRes int resId, String... args) {
+    ((TextView) findViewById(R.id.txt_db_size)).setText(getString(resId, args));
+  }
+
+  private void setCount(@StringRes int resId, String... args) {
+    ((TextView) findViewById(R.id.txt_count)).setText(getString(resId, args));
+  }
+
+  @Override protected void onDestroy() {
+    Log.d(TAG, "onDestroy: " + eve.store().clear());
+    super.onDestroy();
   }
 }

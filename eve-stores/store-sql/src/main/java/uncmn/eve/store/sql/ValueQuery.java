@@ -28,7 +28,11 @@ public class ValueQuery extends SqlQuery {
 
   public static final String CREATE_INDEX_TYPE =
       "CREATE INDEX index_type ON " + TABLE + " (" + TYPE + ")";
+
+  public static final String CREATE_INDEX_TYPE_KEY =
+      "CREATE INDEX index_type_and_key ON " + TABLE + " (" + TYPE + ", " + KEY + ")";
   public static final String WHERE_KEY = KEY + " = ?";
+  public static final String LIKE_KEY = KEY + " LIKE ?";
   public static final String WHERE_TYPE = TYPE + " = ?";
 
   public static final String[] PROJECTION = {
@@ -61,6 +65,16 @@ public class ValueQuery extends SqlQuery {
 
   public ValueQuery key(String key) {
     where(WHERE_KEY, key);
+    return this;
+  }
+
+  public ValueQuery keyPrefix(String key) {
+    where(LIKE_KEY, key + "%");
+    return this;
+  }
+
+  public ValueQuery keyContains(String key) {
+    where(LIKE_KEY, "%" + key + "%");
     return this;
   }
 
