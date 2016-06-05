@@ -172,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
     Log.d(TAG, "Is sample same ? " + sample3.equals(retSample3));
     Log.d(TAG, "Sample object is -- " + retSample3);
 
+    //get key type
+    Log.d(TAG, "onCreate: Key type: " + eve.store().type(sampleKey3).getSimpleName());
+
     ////End Objects
 
     ////Start collections.

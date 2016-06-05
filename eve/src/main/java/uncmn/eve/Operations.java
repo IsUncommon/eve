@@ -113,6 +113,13 @@ public interface Operations {
   void set(String key, List<?> value);
 
   /**
+   * Get type of given key.
+   *
+   * @param key - String key. NonNull
+   */
+  Class type(String key);
+
+  /**
    * Get value for key from store.
    *
    * @param key is a {@link String}, NotNull and Unique

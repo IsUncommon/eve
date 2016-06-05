@@ -352,6 +352,13 @@ public abstract class Store implements Operations {
   public abstract boolean exists(String key);
 
   /**
+   * Query with key/type.
+   */
+  @Override public Query query() {
+    return new Query(this);
+  }
+
+  /**
    * Map Class Type to converter key.
    */
   private String converterKey(Class cls) {
@@ -365,27 +372,30 @@ public abstract class Store implements Operations {
     return converterKey;
   }
 
-  <T> List<Entry<T>> entriesKeyPrefix(Class<T> clazz, String keyPrefix) {
-    return entriesKeyPrefix(converterKey(clazz), keyPrefix);
-  }
-
-  protected abstract <T> List<Entry<T>> entriesKeyPrefix(String converterKey, String keyPrefix);
-
-  <T> List<Entry<T>> entriesKeyContains(Class<T> clazz, String keyContains) {
-    return entriesKeyContains(converterKey(clazz), keyContains);
-  }
-
-  protected abstract <T> List<Entry<T>> entriesKeyContains(String converterKey, String keyContains);
-
-  @Override public Query query() {
-    return new Query(this);
-  }
-
-  <T> List<Entry<T>> entries(Class<T> clazz) {
-    return entries(converterKey(clazz));
+  /**
+   * Map the converter key to class.
+   */
+  protected Class converterType(String converterKey) {
+    return converter.mapType(converterKey);
   }
 
   protected abstract <T> List<Entry<T>> entries(String converterKey);
+
+  protected abstract <T> List<Entry<T>> entriesKeyPrefix(String converterKey, String keyPrefix);
+
+  protected abstract <T> List<Entry<T>> entriesKeyContains(String converterKey, String keyContains);
+
+  <T> List<Entry<T>> entriesTypeInternal(Class<T> clazz) {
+    return entries(converterKey(clazz));
+  }
+
+  <T> List<Entry<T>> entriesKeyPrefixInternal(Class<T> clazz, String keyPrefix) {
+    return entriesKeyPrefix(converterKey(clazz), keyPrefix);
+  }
+
+  <T> List<Entry<T>> entriesKeyContainsInternal(Class<T> clazz, String keyContains) {
+    return entriesKeyContains(converterKey(clazz), keyContains);
+  }
 
   protected abstract List<String> keysType(String convertKey);
 
@@ -397,18 +407,18 @@ public abstract class Store implements Operations {
 
   protected abstract List<String> keysContains(String converterKey, String keyContains);
 
-  <T> List<String> keysType(Class<T> cls) {
+  <T> List<String> keysTypeInternal(Class<T> cls) {
     return keysType(converterKey(cls));
   }
 
-  <T> List<String> keysPrefix(Class<T> clazz, String keyPrefix) {
+  <T> List<String> keysPrefixInternal(Class<T> clazz, String keyPrefix) {
     if (clazz == null) {
       return Collections.emptyList();
     }
     return keysPrefix(converterKey(clazz), keyPrefix);
   }
 
-  <T> List<String> keysContains(Class<T> clazz, String keyContains) {
+  <T> List<String> keysContainsInternal(Class<T> clazz, String keyContains) {
     if (clazz == null) {
       return Collections.emptyList();
     }
@@ -425,18 +435,18 @@ public abstract class Store implements Operations {
 
   protected abstract <T> List<T> valuesContains(String converterKey, String keyContains);
 
-  <T> List<T> valuesType(Class<T> cls) {
+  <T> List<T> valuesTypeInternal(Class<T> cls) {
     return valuesType(converterKey(cls));
   }
 
-  <T> List<T> valuesPrefix(Class<T> clazz, String keyPrefix) {
+  <T> List<T> valuesPrefixInternal(Class<T> clazz, String keyPrefix) {
     if (clazz == null) {
       return Collections.emptyList();
     }
     return valuesPrefix(converterKey(clazz), keyPrefix);
   }
 
-  <T> List<T> valuesContains(Class<T> clazz, String keyContains) {
+  <T> List<T> valuesContainsInternal(Class<T> clazz, String keyContains) {
     if (clazz == null) {
       return Collections.emptyList();
     }

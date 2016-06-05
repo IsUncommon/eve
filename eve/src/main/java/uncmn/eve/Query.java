@@ -134,15 +134,15 @@ public class Query {
     }
 
     @Override public List<Entry<T>> entries() {
-      return query.store.entries(cls);
+      return query.store.entriesTypeInternal(cls);
     }
 
     @Override public List<String> keys() {
-      return query.store.keysType(cls);
+      return query.store.keysTypeInternal(cls);
     }
 
     @Override public List<T> values() {
-      return query.store.valuesType(cls);
+      return query.store.valuesTypeInternal(cls);
     }
   }
 
@@ -200,15 +200,15 @@ public class Query {
     }
 
     @Override public List<Entry<T>> entries() {
-      return query.store.entriesKeyPrefix(cls, query.littleKey);
+      return query.store.entriesKeyPrefixInternal(cls, query.littleKey);
     }
 
     @Override public List<String> keys() {
-      return query.store.keysPrefix(cls, query.littleKey);
+      return query.store.keysPrefixInternal(cls, query.littleKey);
     }
 
     @Override public List<T> values() {
-      return query.store.valuesPrefix(cls, query.littleKey);
+      return query.store.valuesPrefixInternal(cls, query.littleKey);
     }
   }
 
@@ -230,15 +230,15 @@ public class Query {
     }
 
     @Override public List<Entry<T>> entries() {
-      return query.store.entriesKeyContains(cls, query.littleKey);
+      return query.store.entriesKeyContainsInternal(cls, query.littleKey);
     }
 
     @Override public List<String> keys() {
-      return query.store.keysContains(cls, query.littleKey);
+      return query.store.keysContainsInternal(cls, query.littleKey);
     }
 
     @Override public List<T> values() {
-      return query.store.valuesContains(cls, query.littleKey);
+      return query.store.valuesContainsInternal(cls, query.littleKey);
     }
   }
 }

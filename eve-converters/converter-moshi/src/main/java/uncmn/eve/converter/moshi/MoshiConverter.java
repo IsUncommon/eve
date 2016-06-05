@@ -109,4 +109,8 @@ public class MoshiConverter implements Converter {
     }
     return null;
   }
+
+  @Override public Class mapType(String converterKey) {
+    return converterMappings.get(converterKey);
+  }
 }
