@@ -6,13 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
-import com.squareup.moshi.JsonReader;
+import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import okio.BufferedSource;
 import okio.Okio;
@@ -223,64 +226,57 @@ public class MainActivity extends AppCompatActivity {
     Log.w(TAG, "Retrieved values -- " + values);
 
     //add gists
-    try {
-      InputStream stream = getAssets().open("gists.json");
-      BufferedSource source = Okio.buffer(Okio.source(stream));
 
-      List<Gist> gists = new ArrayList<>();
-      processGists(JsonReader.of(source), gists);
-      for (Gist gist : gists) {
-        eve.store().set(Gist.KEY_PREFIX + gist.id(), gist);
-      }
-      List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).values();
+    List<Gist> gists = processGists();
 
-      Log.w(TAG, "Retrieved gist values -- size: " + gistValues.size() + " " + gistValues);
-
-      List<String> gistKeys = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).keys();
-      Log.w(TAG, "Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
-    } catch (IOException e) {
-      e.printStackTrace();
+    for (Gist gist : gists) {
+      eve.store().set(Gist.KEY_PREFIX + gist.id(), gist);
     }
+    Log.d(TAG, "Gists sizes -- " + gists.size());
 
-    List<String> gistKeys = store.query().type(Gist.class).keys();
+    List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).values();
+    Log.w(TAG, "Prefix: Retrieved gist values -- size: " + gistValues.size());
+    same = (gists.size() == gistValues.size());
+    Log.d(TAG, "Prefix: Are sizes same -- " + same);
 
-    Log.w(TAG, "Retrieved gist keys of type -- size: " + gistKeys.size() + " " + gistKeys);
+    Log.d(TAG, "Gists sizes -- " + gists.size());
+    gistValues = store.query().keyContains("ist-").type(Gist.class).values();
+    Log.w(TAG, "Contains: Retrieved gist values -- size: " + gistValues.size());
+    same = (gists.size() == gistValues.size());
+    Log.d(TAG, "Contains: Are sizes same -- " + same);
+
+    List<String> gistKeys = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).keys();
+    Log.w(TAG, "Prefix: Retrieved gist keys -- size: " + gistKeys.size() + " " + gistKeys);
+    same = gists.size() == gistKeys.size();
+    Log.d(TAG, "Are sizes same -- " + same);
+
+    gistKeys = store.query().type(Gist.class).keys();
+    Log.w(TAG, "All: Retrieved gist keys of type -- size: " + gistKeys.size() + " " + gistKeys);
+    same = gists.size() == gistKeys.size();
+    Log.d(TAG, "Are sizes same -- " + same);
 
     setCount(R.string.db_count, sqlStore.count() + "");
   }
 
-  /**
-   * Process Json and create a list of gists.
-   */
-  private void processGists(JsonReader reader, List<Gist> gists) throws IOException {
+  private List<Gist> processGists() {
+    List<Gist> list = new ArrayList<>();
+    try {
+      InputStream stream = getAssets().open("gists.json");
+      BufferedSource source = Okio.buffer(Okio.source(stream));
 
-    JsonReader.Token token = reader.peek();
-    switch (token) {
-      case BEGIN_ARRAY: {
-        reader.beginArray();
-        break;
+      Type listMyData = Types.newParameterizedType(List.class, Gist.class);
+      JsonAdapter<List<Gist>> adapter = moshi.adapter(listMyData);
+      List<Gist> gists = adapter.fromJson(source);
+      //process unique gists
+      HashMap<String, Gist> map = new HashMap<>();
+      for (Gist gist : gists) {
+        map.put(gist.id(), gist);
       }
-      case BEGIN_OBJECT: {
-        Gist gist = moshi.adapter(Gist.class).fromJson(reader);
-        gists.add(gist);
-        break;
-      }
-      case END_OBJECT: {
-        reader.endObject();
-        break;
-      }
-      case END_ARRAY: {
-        reader.endArray();
-        return;
-      }
-      case END_DOCUMENT: {
-        return;
-      }
-      default: {
-        //no-op
-      }
+      list.addAll(map.values());
+    } catch (IOException e) {
+      e.printStackTrace();
     }
-    processGists(reader, gists);
+    return list;
   }
 
   private void setDbName(@StringRes int resId, String... args) {
