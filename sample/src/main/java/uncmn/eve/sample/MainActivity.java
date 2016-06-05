@@ -246,20 +246,6 @@ public class MainActivity extends AppCompatActivity {
 
     Log.w(TAG, "Retrieved gist keys of type -- size: " + gistKeys.size() + " " + gistKeys);
 
-    //add minecraft error - huge text file - experimental
-    /*try {
-      InputStream crashStream = getAssets().open("minecraft_crash.txt");
-      BufferedSource crashBuffer = Okio.buffer(Okio.source(crashStream));
-
-      eve.store().set("minecraft", crashBuffer.readByteArray());
-      ByteString byteString = ByteString.of((byte[]) eve.store().get("minecraft"));
-
-      Log.w(TAG, byteString.utf8());
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }*/
-
     setCount(R.string.db_count, sqlStore.count() + "");
   }
 
