@@ -13,7 +13,7 @@ import com.squareup.moshi.Moshi;
 
 @AutoValue public abstract class Gist {
 
-  public static final String KEY_PREFIX = "gist";
+  public static final String KEY_PREFIX = "gist-";
 
   public static final String CONVERTER_KEY = Gist.class.getSimpleName();
 
