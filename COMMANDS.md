@@ -147,3 +147,13 @@ Get list of VALUES for key contains and class type.
     .entries();
 
 ```
+
+#### Get list of KEYS for type.
+
+```java
+
+  query()
+    .type(Class type)
+    .keys();
+
+```
