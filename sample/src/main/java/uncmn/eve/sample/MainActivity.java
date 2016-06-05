@@ -1,9 +1,11 @@
 package uncmn.eve.sample;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import com.ryanharter.auto.value.moshi.AutoValueMoshiAdapterFactory;
 import com.squareup.moshi.JsonAdapter;
@@ -45,10 +47,13 @@ public class MainActivity extends AppCompatActivity {
 
     //set variables
     setDbName(R.string.db_name, sqlStore.dbName());
-    setDbSize(R.string.db_size, new File(sqlStore.dbPath()).length() / 1000 + " kb");
-    setCount(R.string.db_count, sqlStore.count() + "");
+    showStoreDetails(sqlStore);
 
     eve = Eve.builder().store(sqlStore).build();
+
+    //set click listeners
+    setClickListeners();
+
     Store store = eve.store();
 
     ////Add Primitives
@@ -225,12 +230,20 @@ public class MainActivity extends AppCompatActivity {
 
     Log.w(TAG, "Retrieved values -- " + values);
 
-    //add gists
+    showStoreDetails(sqlStore);
+  }
+
+  private void add100Gists() {
+
+    boolean same;
+    Store store = eve.store();
 
     List<Gist> gists = processGists();
 
+    long time = SystemClock.currentThreadTimeMillis();
+
     for (Gist gist : gists) {
-      eve.store().set(Gist.KEY_PREFIX + gist.id(), gist);
+      eve.store().set(Gist.KEY_PREFIX + gist.id() + time, gist);
     }
     Log.d(TAG, "Gists sizes -- " + gists.size());
 
@@ -254,8 +267,6 @@ public class MainActivity extends AppCompatActivity {
     Log.w(TAG, "All: Retrieved gist keys of type -- size: " + gistKeys.size() + " " + gistKeys);
     same = gists.size() == gistKeys.size();
     Log.d(TAG, "Are sizes same -- " + same);
-
-    setCount(R.string.db_count, sqlStore.count() + "");
   }
 
   private List<Gist> processGists() {
@@ -279,6 +290,27 @@ public class MainActivity extends AppCompatActivity {
     return list;
   }
 
+  private void showStoreDetails(SqlStore store) {
+    setDbSize(R.string.db_size, new File(store.dbPath()).length() / 1000 + " kb");
+    setCount(R.string.db_count, store.count() + "");
+  }
+
+  private void setClickListeners() {
+    findViewById(R.id.btn_add).setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        add100Gists();
+        showStoreDetails((SqlStore) eve.store());
+      }
+    });
+
+    findViewById(R.id.btn_clear).setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        Log.d(TAG, "onClick: Clear: " + eve.store().clear());
+        showStoreDetails((SqlStore) eve.store());
+      }
+    });
+  }
+
   private void setDbName(@StringRes int resId, String... args) {
     ((TextView) findViewById(R.id.txt_db_name)).setText(getString(resId, args));
   }
@@ -292,7 +324,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Override protected void onDestroy() {
-    Log.d(TAG, "onDestroy: " + eve.store().clear());
     super.onDestroy();
   }
 }
