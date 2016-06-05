@@ -300,4 +300,9 @@ public class MainActivity extends AppCompatActivity {
   private void setCount(@StringRes int resId, String... args) {
     ((TextView) findViewById(R.id.txt_count)).setText(getString(resId, args));
   }
+
+  @Override protected void onDestroy() {
+    Log.d(TAG, "onDestroy: " + eve.store().clear());
+    super.onDestroy();
+  }
 }

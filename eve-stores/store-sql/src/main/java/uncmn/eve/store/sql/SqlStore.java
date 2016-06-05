@@ -120,6 +120,13 @@ public class SqlStore extends Store {
     return null;
   }
 
+  /**
+   * Clear database and return number of rows deleted.
+   */
+  @Override public int clear() {
+    return db.delete(ValueQuery.TABLE, null);
+  }
+
   @Override public boolean delete(String key) {
     ValueQuery query = ValueQuery.queryBuilder().key(key);
 
