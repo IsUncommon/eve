@@ -3,4 +3,5 @@
   <string name="db_name">Database Name: %s</string>
   <string name="db_size">Database Size: %s</string>
   <string name="db_count">Count: %s</string>
+  <string name="_100">100</string>
 </resources>
