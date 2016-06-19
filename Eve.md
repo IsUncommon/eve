@@ -1,1 +1,0 @@
-Eve is a key value store.

@@ -1,4 +1,4 @@
-## Eve store commands.
+## List of Eve store commands.
 
 #### Set Java primitive data types.
 
