@@ -2,6 +2,21 @@ apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 apply plugin: 'pmd'
 
+task quality(type: QualityTask) {
+  dependsOn {
+    println "\nStart quality checks...\n"
+  }
+
+  doLast {
+    println "\nCompleted quality checks successfully.\n"
+  }
+}
+
+class QualityTask extends DefaultTask {}
+
+// ./gradlew check shall do all the checks. 'lint'.
+quality.dependsOn 'checkstyle', 'findbugs', 'pmd'
+
 task checkstyle(type: Checkstyle) {
   configFile file("${project.rootDir}/quality/checkstyle/checkstyle.xml")
   configProperties = ['checkstyle.cache.file'     : rootProject.file('build/checkstyle.cache'),
