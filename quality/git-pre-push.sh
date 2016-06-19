@@ -19,7 +19,7 @@
 # This sample shows how to prevent push of commits where the log message starts
 # with "WIP" (work in progress).
 
-./gradlew -q clean quality --info
+./gradlew -q clean build quality --info
 
 if [ $? -ne 0 ] ; then
     echo "Aborting due to failed tests."

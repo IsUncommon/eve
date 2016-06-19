@@ -234,8 +234,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void add100Gists() {
-
-    boolean same;
+    
     Store store = eve.store();
 
     List<Gist> gists = processGists();
@@ -247,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
     }
     Log.d(TAG, "Gists sizes -- " + gists.size());
 
+    boolean same;
     List<Gist> gistValues = store.query().keyPrefix(Gist.KEY_PREFIX).type(Gist.class).values();
     Log.w(TAG, "Prefix: Retrieved gist values -- size: " + gistValues.size());
     same = (gists.size() == gistValues.size());
