@@ -2,7 +2,23 @@ apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 apply plugin: 'pmd'
 
+task quality(type: QualityTask) {
+  dependsOn {
+    println "\nStart quality checks...\n"
+  }
+
+  doLast {
+    println "\nCompleted quality checks successfully.\n"
+  }
+}
+
+class QualityTask extends DefaultTask {}
+
+// ./gradlew check shall do all the checks. 'lint'.
+quality.dependsOn 'checkstyle', 'findbugs', 'pmd', 'lint'
+
 task checkstyle(type: Checkstyle) {
+  ignoreFailures = false
   configFile file("${project.rootDir}/quality/checkstyle/checkstyle.xml")
   configProperties = ['checkstyle.cache.file'     : rootProject.file('build/checkstyle.cache'),
                       'checkstyleSuppressionsPath': file(
@@ -58,14 +74,6 @@ task pmd(type: Pmd) {
     }
   }
 }
-
-check.doLast {
-  project.tasks.getByName("checkstyle").execute()
-  project.tasks.getByName("findbugs").execute()
-  project.tasks.getByName("pmd").execute()
-  project.tasks.getByName("lint").execute()
-}
-
 
 checkstyle {
   toolVersion '6.17' // set Checkstyle version here
