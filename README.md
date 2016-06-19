@@ -7,8 +7,8 @@ Eve is under **beta**. During the development process we are adding more informa
 - Converter to serialize and deserialize data into bytes[].
 - Store used to save key-value and type of the data.
 
-#### [Eve commands list.](/docs/COMMANDS.md) 
-#### [Eve design document.](/docs/DESIGN.md)
+###### [Eve commands list.](/docs/COMMANDS.md) 
+###### [Eve design document.](/docs/DESIGN.md)
 
 
 ###### Contribution:
