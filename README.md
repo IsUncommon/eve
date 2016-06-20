@@ -7,16 +7,16 @@ Eve is under **beta**. During the development process we are adding more informa
 - Converter to serialize and deserialize data into bytes[].
 - Store used to save key-value and type of the data.
 
-#### [Eve commands list.](/docs/COMMANDS.md) 
-#### [Eve design document.](/docs/DESIGN.md)
+###### [Eve commands list.](/docs/COMMANDS.md) 
+###### [Eve design document.](/docs/DESIGN.md)
 
 
 ###### Contribution:
 
 - We follow [Square Android code style](https://github.com/square/java-code-styles).
 - [Quality and checkstyles](/quality)
-- You will right at home if you like Effective Java.
-- Github has done a good job tracking contributors. Feel free to say Hi, for any questions.
+- You will feel right at home if you like Effective Java.
+- Github has done a good job tracking [contributors](https://github.com/IsUncommon/eve/graphs/contributors). Feel free to say Hi, for any questions.
 
 
 
