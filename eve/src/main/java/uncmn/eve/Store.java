@@ -274,7 +274,7 @@ public abstract class Store implements Operations {
    * @param key is a {@link String}, NotNull and Unique
    * @param value {@link Value}
    */
-  public abstract void set(String key, Value value);
+  public abstract PostOperations set(String key, Value value);
 
   /**
    * Build {@link Value}.

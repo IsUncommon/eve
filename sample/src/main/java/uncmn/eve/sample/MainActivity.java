@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void add100Gists() {
-    
+
     Store store = eve.store();
 
     List<Gist> gists = processGists();

@@ -11,6 +11,7 @@ import java.util.List;
 import rx.schedulers.Schedulers;
 import uncmn.eve.Converter;
 import uncmn.eve.Entry;
+import uncmn.eve.PostOperations;
 import uncmn.eve.Store;
 import uncmn.eve.Value;
 
@@ -76,26 +77,31 @@ public class SqlStore extends Store {
     return count;
   }
 
-  @Override public void set(String key, Value value) {
-    ValueQuery query = ValueQuery.queryBuilder().key(key);
+  @Override public PostOperations set(final String key, Value value) {
 
-    final String sql = query.sql();
-    final String[] args = query.args();
+    return SqlPostOperations.create(value, new PostOperations.Action1() {
+      @Override public void call(Value value) {
+        ValueQuery query = ValueQuery.queryBuilder().key(key);
 
-    Cursor cursor = db.query(sql, args);
-    ContentValues contentValues = ValueQuery.contentValues(key, value);
-    try {
-      if (cursor != null && cursor.getCount() > 0) {
-        db.update(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE,
-            ValueQuery.WHERE_KEY, args);
-      } else {
-        db.insert(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        final String sql = query.sql();
+        final String[] args = query.args();
+
+        Cursor cursor = db.query(sql, args);
+        ContentValues contentValues = ValueQuery.contentValues(key, value);
+        try {
+          if (cursor != null && cursor.getCount() > 0) {
+            db.update(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE,
+                ValueQuery.WHERE_KEY, args);
+          } else {
+            db.insert(ValueQuery.TABLE, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+          }
+        } finally {
+          if (cursor != null) {
+            cursor.close();
+          }
+        }
       }
-    } finally {
-      if (cursor != null) {
-        cursor.close();
-      }
-    }
+    });
   }
 
   @Override public Class type(String key) {
